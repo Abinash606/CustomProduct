@@ -15,13 +15,17 @@
             selection: true
         });
 
-        // Fabric.js styling
+        // Fabric.js styling - FIX: Remove invalid textBaseline
         fabric.Object.prototype.transparentCorners = false;
         fabric.Object.prototype.cornerColor = '#0066ff';
         fabric.Object.prototype.cornerStyle = 'circle';
         fabric.Object.prototype.borderColor = '#0066ff';
         fabric.Object.prototype.cornerStrokeColor = 'white';
         fabric.Object.prototype.padding = 6;
+
+        // FIX: Set valid textBaseline for text objects only
+        fabric.Text.prototype.textBaseline = 'alphabetic'; // Valid enum value
+        fabric.IText.prototype.textBaseline = 'alphabetic'; // Valid enum value
 
         let history = [];
         let historyIndex = -1;
@@ -71,7 +75,8 @@
                 fontFamily: 'Inter',
                 fontSize: 24,
                 fontWeight: 'bold',
-                fill: '#0f172a'
+                fill: '#0f172a',
+                textBaseline: 'alphabetic' // FIX: Use valid enum value
             });
             text.name = 'Text';
             canvas.add(text);
@@ -215,7 +220,8 @@
                     fontFamily: 'Inter',
                     fontWeight: '800',
                     fill: '#064e3b',
-                    lineHeight: 0.95
+                    lineHeight: 0.95,
+                    textBaseline: 'alphabetic'
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -234,7 +240,8 @@
                     fontSize: 30,
                     fontFamily: 'Inter',
                     fontWeight: '500',
-                    charSpacing: 200
+                    charSpacing: 200,
+                    textBaseline: 'alphabetic'
                 });
                 title.name = 'Title';
                 canvas.add(rect, title);
@@ -246,7 +253,56 @@
                     fontFamily: 'Impact',
                     fill: '#f8fafc',
                     textAlign: 'center',
-                    lineHeight: 0.9
+                    lineHeight: 0.9,
+                    textBaseline: 'alphabetic'
+                });
+                title.name = 'Title';
+                canvas.add(title);
+            } else if (key === 'aqua') {
+                canvas.backgroundColor = '#0066ff';
+                const title = new fabric.IText('AQUA', {
+                    left: 80, top: 150,
+                    fontSize: 50,
+                    fontFamily: 'Inter',
+                    fontWeight: '900',
+                    fill: '#ffffff',
+                    textBaseline: 'alphabetic'
+                });
+                title.name = 'Title';
+                canvas.add(title);
+            } else if (key === 'organic') {
+                canvas.backgroundColor = '#064e3b';
+                const title = new fabric.IText('ORGANIC', {
+                    left: 60, top: 150,
+                    fontSize: 36,
+                    fontFamily: 'Inter',
+                    fontWeight: '700',
+                    fill: '#34d399',
+                    textBaseline: 'alphabetic'
+                });
+                title.name = 'Title';
+                canvas.add(title);
+            } else if (key === 'sunset') {
+                canvas.backgroundColor = '#f97316';
+                const title = new fabric.IText('SUNSET', {
+                    left: 70, top: 150,
+                    fontSize: 40,
+                    fontFamily: 'Inter',
+                    fontWeight: '800',
+                    fill: '#ffffff',
+                    textBaseline: 'alphabetic'
+                });
+                title.name = 'Title';
+                canvas.add(title);
+            } else if (key === 'night') {
+                canvas.backgroundColor = '#111827';
+                const title = new fabric.IText('NIGHT', {
+                    left: 80, top: 150,
+                    fontSize: 42,
+                    fontFamily: 'Inter',
+                    fontWeight: '800',
+                    fill: '#6d28d9',
+                    textBaseline: 'alphabetic'
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -276,10 +332,161 @@
             updatePropsPanel();
         };
 
+        // === BRAND BLOCK ===
+        window.quickAddBrandBlock = function () {
+            const rect = new fabric.Rect({
+                width: 200,
+                height: 80,
+                fill: '#0066ff',
+                rx: 12,
+                ry: 12
+            });
+
+            const text = new fabric.IText('Your Brand', {
+                fontSize: 28,
+                fontFamily: 'Inter',
+                fontWeight: 'bold',
+                fill: '#ffffff',
+                originX: 'center',
+                originY: 'center',
+                left: 100,
+                top: 40,
+                textBaseline: 'alphabetic'
+            });
+
+            const group = new fabric.Group([rect, text], {
+                left: 50,
+                top: 180
+            });
+
+            group.name = 'Brand Block';
+
+            canvas.add(group);
+            canvas.setActiveObject(group);
+            canvas.renderAll();
+            saveHistory();
+        };
+
         // === STATUS UI ===
         window.setDirty = function (isDirty) {
             $('#statusDot').toggleClass('dirty', isDirty);
             $('#statusText').text(isDirty ? 'Unsaved' : 'Saved');
+            if (isDirty) {
+                $('#statusTime').text('Just now');
+            }
+        };
+
+        // === EXPORT FUNCTIONS ===
+        window.openExport = function () {
+            const modal = new bootstrap.Modal(document.getElementById('exportModal'));
+
+            const previewData = canvas.toDataURL({
+                format: 'png',
+                multiplier: 1
+            });
+            $('#exportPreview').attr('src', previewData);
+
+            modal.show();
+        };
+
+        window.exportPNG = function () {
+            const scale = parseInt($('#exportScale').val()) || 2;
+            const dataURL = canvas.toDataURL({
+                format: 'png',
+                multiplier: scale,
+                quality: 1
+            });
+
+            const link = document.createElement('a');
+            link.download = 'label-design-' + Date.now() + '.png';
+            link.href = dataURL;
+            link.click();
+        };
+
+        window.exportPDF = function () {
+            const scale = parseInt($('#exportScale').val()) || 2;
+            const imgData = canvas.toDataURL({
+                format: 'png',
+                multiplier: scale
+            });
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [CANVAS_W * 0.264583, CANVAS_H * 0.264583]
+            });
+
+            pdf.addImage(imgData, 'PNG', 0, 0, CANVAS_W * 0.264583, CANVAS_H * 0.264583);
+            pdf.save('label-design-' + Date.now() + '.pdf');
+        };
+
+        // === DRAFTS FUNCTIONS ===
+        window.openDrafts = function () {
+            const modal = new bootstrap.Modal(document.getElementById('draftsModal'));
+            loadDraftsList();
+            modal.show();
+        };
+
+        function loadDraftsList() {
+            const $list = $('#draftsList');
+            $list.empty();
+
+            const drafts = JSON.parse(localStorage.getItem('swp_ls_drafts') || '[]');
+
+            if (drafts.length === 0) {
+                $list.html('<div class="col-12"><div class="hint-card">No drafts saved yet</div></div>');
+                return;
+            }
+
+            drafts.forEach((draft, index) => {
+                const $col = $('<div class="col-md-4"></div>');
+                const $card = $('<div class="hint-card" style="cursor:pointer;"></div>');
+                $card.html(`
+                    <div style="font-weight:800; margin-bottom:8px;">${draft.name}</div>
+                    <div style="font-size:0.85rem; color:#94a3b8;">${draft.date}</div>
+                `);
+                $card.on('click', () => loadDraft(index));
+                $col.append($card);
+                $list.append($col);
+            });
+        }
+
+        window.saveDraftPrompt = function () {
+            const name = prompt('Enter draft name:', 'Design ' + (new Date().toLocaleString()));
+            if (name) {
+                saveDraft(name);
+            }
+        };
+
+        function saveDraft(name) {
+            const drafts = JSON.parse(localStorage.getItem('swp_ls_drafts') || '[]');
+            drafts.push({
+                name: name,
+                date: new Date().toLocaleString(),
+                data: JSON.stringify(canvas.toJSON(['name']))
+            });
+            localStorage.setItem('swp_ls_drafts', JSON.stringify(drafts));
+            loadDraftsList();
+            alert('Draft saved!');
+        }
+
+        function loadDraft(index) {
+            const drafts = JSON.parse(localStorage.getItem('swp_ls_drafts') || '[]');
+            if (drafts[index]) {
+                canvas.loadFromJSON(drafts[index].data, () => {
+                    canvas.renderAll();
+                    saveHistory();
+                    bootstrap.Modal.getInstance(document.getElementById('draftsModal')).hide();
+                });
+            }
+        }
+
+        window.clearDrafts = function () {
+            if (confirm('Are you sure you want to delete all drafts?')) {
+                localStorage.removeItem('swp_ls_drafts');
+                loadDraftsList();
+            }
         };
 
         // === LAYERS ===
@@ -362,26 +569,10 @@
             }
         };
 
-        // === STEPS ===
-        window.goToStep = function (step) {
-            $('.step-item').removeClass('active');
-            $(`.step-item[data-step="${step}"]`).addClass('active');
-            $('.step-panel').hide();
-            $(`#step-panel-${step}`).show();
-            if (step === 4) renderReviewStep();
-        };
-
-        function renderReviewStep() {
-            const thumb = canvas.toDataURL({ format: 'png', multiplier: 0.5 });
-            $('#review-thumb').attr('src', thumb);
-            $('#review-product').text($('#product-select option:selected').text() || 'Standard Bottle');
-            $('#review-qty').text($('#qty-input').val() || '1');
-        }
-
         // === SAVE & ADD TO CART ===
         window.saveAndAddToCart = function () {
             const jsonData = JSON.stringify(canvas.toJSON(['name']));
-            const pngData = canvas.toDataURL({ format: 'png', multiplier: parseInt(swp_ls_vars.export_scale) || 2 });
+            const pngData = canvas.toDataURL({ format: 'png', multiplier: 2 });
 
             $('#statusText').text('Saving...');
 
@@ -393,7 +584,7 @@
                     nonce: swp_ls_vars.nonce,
                     product_id: $('#swp-ls-designer-app').data('product-id'),
                     variation_id: $('#swp-ls-designer-app').data('variation-id'),
-                    qty: $('#qty-input').val() || 1,
+                    qty: $('#swp-ls-designer-app').data('qty') || 1,
                     design_json: jsonData,
                     design_png: pngData
                 },
@@ -453,6 +644,10 @@
             if (ctrl && e.key.toLowerCase() === 'g') {
                 e.preventDefault();
                 toggleGrid();
+            }
+            if (ctrl && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                saveDraftPrompt();
             }
 
             if (e.key === 'Delete' || e.key === 'Backspace') {
