@@ -1,13 +1,60 @@
 (function ($) {
     'use strict';
+    // LAUNCH DESIGNER BUTTON - Works on Product Pages
+    $(document).on('click', '.swp-launch-designer', function (e) {
+        e.preventDefault();
+        console.log('Launch Designer clicked');
 
+        const productId = $(this).data('product-id');
+        console.log('Product ID:', productId);
+
+        if (!productId) {
+            alert('Product ID missing');
+            return;
+        }
+
+        // Show loading state
+        const $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Loading...');
+
+        $.ajax({
+            url: swp_ls_vars.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'swp_ls_set_product',
+                nonce: swp_ls_vars.nonce,
+                product_id: productId
+            },
+            success: function (res) {
+                console.log('AJAX success:', res);
+                if (res.success && res.data.designer_url) {
+                    console.log('Redirecting to designer:', res.data.designer_url);
+                    window.location.href = res.data.designer_url;
+                } else {
+                    alert(res.data || 'Failed to launch designer');
+                    $btn.prop('disabled', false).html('Launch Designer');
+                }
+            },
+            error: function (err) {
+                console.error('AJAX error:', err);
+                alert('Network error. Please try again.');
+                $btn.prop('disabled', false).html('Launch Designer');
+            }
+        });
+    });
+
+    // ============================================
+    // DESIGNER INTERFACE - Only runs when canvas exists
+    // ============================================
     $(document).ready(function () {
         if (!$('#c').length) return;
+
+        var canvas = null;
 
         const CANVAS_W = 300;
         const CANVAS_H = 450;
 
-        const canvas = new fabric.Canvas('c', {
+        window.swpLsCanvas = new fabric.Canvas('c', {
             width: CANVAS_W,
             height: CANVAS_H,
             backgroundColor: '#ffffff',
@@ -15,7 +62,9 @@
             selection: true
         });
 
-        // Fabric.js styling - FIX: Remove invalid textBaseline
+        canvas = window.swpLsCanvas;
+
+        // Fabric.js styling
         fabric.Object.prototype.transparentCorners = false;
         fabric.Object.prototype.cornerColor = '#0066ff';
         fabric.Object.prototype.cornerStyle = 'circle';
@@ -23,9 +72,8 @@
         fabric.Object.prototype.cornerStrokeColor = 'white';
         fabric.Object.prototype.padding = 6;
 
-        // FIX: Set valid textBaseline for text objects only
-        fabric.Text.prototype.textBaseline = 'alphabetic'; // Valid enum value
-        fabric.IText.prototype.textBaseline = 'alphabetic'; // Valid enum value
+        fabric.Text.prototype.textBaseline = 'alphabetic';
+        fabric.IText.prototype.textBaseline = 'alphabetic';
 
         let history = [];
         let historyIndex = -1;
@@ -75,8 +123,7 @@
                 fontFamily: 'Inter',
                 fontSize: 24,
                 fontWeight: 'bold',
-                fill: '#0f172a',
-                textBaseline: 'alphabetic' // FIX: Use valid enum value
+                fill: '#0f172a'
             });
             text.name = 'Text';
             canvas.add(text);
@@ -127,6 +174,45 @@
             reader.readAsDataURL(file);
             e.target.value = '';
         });
+
+        // === LOAD PRODUCT IMAGE ===
+        window.loadProductImage = function () {
+            const $app = $('#swp-ls-designer-app');
+            const productImage = $app.data('image');
+
+            console.log('Product Image URL:', productImage);
+
+            if (!productImage || productImage === '') {
+                console.warn('No product image URL provided');
+                alert('No product image available');
+                return;
+            }
+
+            fabric.Image.fromURL(productImage, function (img) {
+                if (!img || !img.width) {
+                    console.error('Failed to load product image');
+                    alert('Failed to load product image');
+                    return;
+                }
+
+                const scale = Math.min(CANVAS_W / img.width, CANVAS_H / img.height) * 0.8;
+                img.scale(scale);
+                img.set({
+                    left: CANVAS_W / 2,
+                    top: CANVAS_H / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: true
+                });
+                img.name = 'Product Image';
+                canvas.add(img);
+                canvas.sendToBack(img);
+                canvas.renderAll();
+                saveHistory();
+            }, {
+                crossOrigin: 'anonymous'
+            });
+        };
 
         // === QR CODE ===
         window.showQRCodeModal = function () {
@@ -220,8 +306,7 @@
                     fontFamily: 'Inter',
                     fontWeight: '800',
                     fill: '#064e3b',
-                    lineHeight: 0.95,
-                    textBaseline: 'alphabetic'
+                    lineHeight: 0.95
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -240,8 +325,7 @@
                     fontSize: 30,
                     fontFamily: 'Inter',
                     fontWeight: '500',
-                    charSpacing: 200,
-                    textBaseline: 'alphabetic'
+                    charSpacing: 200
                 });
                 title.name = 'Title';
                 canvas.add(rect, title);
@@ -253,8 +337,7 @@
                     fontFamily: 'Impact',
                     fill: '#f8fafc',
                     textAlign: 'center',
-                    lineHeight: 0.9,
-                    textBaseline: 'alphabetic'
+                    lineHeight: 0.9
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -265,8 +348,7 @@
                     fontSize: 50,
                     fontFamily: 'Inter',
                     fontWeight: '900',
-                    fill: '#ffffff',
-                    textBaseline: 'alphabetic'
+                    fill: '#ffffff'
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -277,8 +359,7 @@
                     fontSize: 36,
                     fontFamily: 'Inter',
                     fontWeight: '700',
-                    fill: '#34d399',
-                    textBaseline: 'alphabetic'
+                    fill: '#34d399'
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -289,8 +370,7 @@
                     fontSize: 40,
                     fontFamily: 'Inter',
                     fontWeight: '800',
-                    fill: '#ffffff',
-                    textBaseline: 'alphabetic'
+                    fill: '#ffffff'
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -301,8 +381,7 @@
                     fontSize: 42,
                     fontFamily: 'Inter',
                     fontWeight: '800',
-                    fill: '#6d28d9',
-                    textBaseline: 'alphabetic'
+                    fill: '#6d28d9'
                 });
                 title.name = 'Title';
                 canvas.add(title);
@@ -350,8 +429,7 @@
                 originX: 'center',
                 originY: 'center',
                 left: 100,
-                top: 40,
-                textBaseline: 'alphabetic'
+                top: 40
             });
 
             const group = new fabric.Group([rect, text], {
@@ -376,6 +454,17 @@
             }
         };
 
+        // === PREVIEW FUNCTION ===
+        window.showPreview = function () {
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            const previewData = canvas.toDataURL({
+                format: 'png',
+                multiplier: 2
+            });
+            $('#previewImage').attr('src', previewData);
+            modal.show();
+        };
+
         // === EXPORT FUNCTIONS ===
         window.openExport = function () {
             const modal = new bootstrap.Modal(document.getElementById('exportModal'));
@@ -390,7 +479,7 @@
         };
 
         window.exportPNG = function () {
-            const scale = parseInt($('#exportScale').val()) || 2;
+            const scale = parseInt($('#exportScale').val()) || swp_ls_vars.export_scale;
             const dataURL = canvas.toDataURL({
                 format: 'png',
                 multiplier: scale,
@@ -571,10 +660,29 @@
 
         // === SAVE & ADD TO CART ===
         window.saveAndAddToCart = function () {
-            const jsonData = JSON.stringify(canvas.toJSON(['name']));
-            const pngData = canvas.toDataURL({ format: 'png', multiplier: 2 });
+            if (!window.swpLsCanvas) {
+                alert('Designer not initialized');
+                return;
+            }
+
+            const $app = $('#swp-ls-designer-app');
+            const productId = parseInt($app.data('product-id'));
+            const variationId = parseInt($app.data('variation-id')) || 0;
+            const qty = parseInt($app.data('qty')) || 1;
+
+            if (!productId) {
+                alert('Product ID missing');
+                return;
+            }
+
+            const jsonData = JSON.stringify(swpLsCanvas.toJSON(['name']));
+            const pngData = swpLsCanvas.toDataURL({
+                format: 'png',
+                multiplier: 2
+            });
 
             $('#statusText').text('Saving...');
+            $('#swp-ls-add-to-cart').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Adding to Cart...');
 
             $.ajax({
                 url: swp_ls_vars.ajax_url,
@@ -582,23 +690,28 @@
                 data: {
                     action: 'swp_ls_save_design',
                     nonce: swp_ls_vars.nonce,
-                    product_id: $('#swp-ls-designer-app').data('product-id'),
-                    variation_id: $('#swp-ls-designer-app').data('variation-id'),
-                    qty: $('#swp-ls-designer-app').data('qty') || 1,
+                    product_id: productId,
+                    variation_id: variationId,
+                    qty: qty,
                     design_json: jsonData,
                     design_png: pngData
                 },
                 success: function (response) {
-                    if (response.success) {
+                    if (response.success && response.data.cart_url) {
+                        $('#statusText').text('Success!');
                         window.location.href = response.data.cart_url;
                     } else {
-                        alert('Error: ' + (response.data || 'Unknown error'));
+                        console.error(response);
+                        alert(response.data || 'Failed to add product to cart');
                         $('#statusText').text('Error');
+                        $('#swp-ls-add-to-cart').prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
                     }
                 },
-                error: function () {
+                error: function (xhr) {
+                    console.error(xhr.responseText);
                     alert('Network error. Please try again.');
                     $('#statusText').text('Error');
+                    $('#swp-ls-add-to-cart').prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
                 }
             });
         };
@@ -659,16 +772,35 @@
             }
         });
 
+        // === ADD TO CART BUTTON HANDLER ===
+        $(document).on('click', '#swp-ls-add-to-cart', function (e) {
+            e.preventDefault();
+            saveAndAddToCart();
+        });
+
         // === INITIALIZE ===
         function init() {
-            loadTemplate('minimal');
+            const $app = $('#swp-ls-designer-app');
+            const loadProductImg = $app.data('load-product-image');
+            const productImage = $app.data('image');
+
+            console.log('Has product image:', loadProductImg);
+            console.log('Product image URL:', productImage);
+
+            // Auto-load product image if available
+            if (loadProductImg === true || loadProductImg === 'true') {
+                loadProductImage();
+            } else {
+            // No product image, load default template
+                loadTemplate('minimal');
+            }
+
             history = [JSON.stringify(canvas.toJSON(['name']))];
             historyIndex = 0;
             setDirty(false);
             updatePropsPanel();
             renderLayers();
             applyZoom();
-            goToStep(3); // Start on design step
         }
 
         init();
