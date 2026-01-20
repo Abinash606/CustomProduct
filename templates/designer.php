@@ -122,20 +122,41 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-                <div class="mt-4">
-                    <span class="prop-label"><?php _e('Quick align', 'swp-label-studio'); ?></span>
-                    <div class="d-flex flex-wrap gap-2">
-                        <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('left')">
-                            <i class="fa-solid fa-align-left me-2"></i><?php _e('Left', 'swp-label-studio'); ?>
-                        </button>
-                        <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('center')">
-                            <i class="fa-solid fa-align-center me-2"></i><?php _e('Center', 'swp-label-studio'); ?>
-                        </button>
-                        <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('right')">
-                            <i class="fa-solid fa-align-right me-2"></i><?php _e('Right', 'swp-label-studio'); ?>
-                        </button>
-                    </div>
-                </div>
+<div class="mt-4">
+    <span class="prop-label"><?php _e('Quick align', 'swp-label-studio'); ?></span>
+    
+    <!-- Horizontal Alignment -->
+    <div class="mb-2">
+        <small class="text-muted d-block mb-1"><?php _e('Horizontal', 'swp-label-studio'); ?></small>
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('left')" title="<?php esc_attr_e('Align Left', 'swp-label-studio'); ?>">
+                <i class="fa-solid fa-align-left me-2"></i><?php _e('Left', 'swp-label-studio'); ?>
+            </button>
+            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('center')" title="<?php esc_attr_e('Align Center', 'swp-label-studio'); ?>">
+                <i class="fa-solid fa-align-center me-2"></i><?php _e('Center', 'swp-label-studio'); ?>
+            </button>
+            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('right')" title="<?php esc_attr_e('Align Right', 'swp-label-studio'); ?>">
+                <i class="fa-solid fa-align-right me-2"></i><?php _e('Right', 'swp-label-studio'); ?>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Vertical Alignment -->
+    <div>
+        <small class="text-muted d-block mb-1"><?php _e('Vertical', 'swp-label-studio'); ?></small>
+        <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('top')" title="<?php esc_attr_e('Align Top', 'swp-label-studio'); ?>">
+                <i class="fa-solid fa-arrow-up me-2"></i><?php _e('Top', 'swp-label-studio'); ?>
+            </button>
+            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('middle')" title="<?php esc_attr_e('Align Middle', 'swp-label-studio'); ?>">
+                <i class="fa-solid fa-grip-lines me-2"></i><?php _e('Middle', 'swp-label-studio'); ?>
+            </button>
+            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('bottom')" title="<?php esc_attr_e('Align Bottom', 'swp-label-studio'); ?>">
+                <i class="fa-solid fa-arrow-down me-2"></i><?php _e('Bottom', 'swp-label-studio'); ?>
+            </button>
+        </div>
+    </div>
+</div>
 
                 <div class="mt-4">
                     <span class="prop-label"><?php _e('Background', 'swp-label-studio'); ?></span>
@@ -155,35 +176,35 @@ if (!defined('ABSPATH')) {
 
         <!-- CENTER STAGE: CANVAS -->
         <div class="center-stage">
-            <div class="action-bar">
-                <div class="action-left">
-                    <button class="icon-btn" onclick="undo()" title="<?php esc_attr_e('Undo (Ctrl+Z)', 'swp-label-studio'); ?>">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </button>
-                    <button class="icon-btn" onclick="redo()" title="<?php esc_attr_e('Redo (Ctrl+Shift+Z)', 'swp-label-studio'); ?>">
-                        <i class="fa-solid fa-rotate-right"></i>
-                    </button>
-                    <div class="vr-separator"></div>
-                    <button class="icon-btn danger" onclick="deleteObj()" title="<?php esc_attr_e('Delete (Del)', 'swp-label-studio'); ?>">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                    <div class="vr-separator"></div>
-                    <button class="icon-btn" id="gridBtn" onclick="toggleGrid()" title="<?php esc_attr_e('Toggle grid (Ctrl+G)', 'swp-label-studio'); ?>">
-                        <i class="fa-solid fa-border-all"></i>
-                    </button>
-                    <button class="icon-btn" id="safeBtn" onclick="toggleSafe()" title="<?php esc_attr_e('Safe area overlay', 'swp-label-studio'); ?>">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </button>
-                </div>
-                <div class="action-right">
-                    <button class="btn btn-light border rounded-pill fw-bold px-3" onclick="quickAddBrandBlock()">
-                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> <?php _e('Brand Block', 'swp-label-studio'); ?>
-                    </button>
-                    <button class="btn btn-primary rounded-pill fw-bold px-3" onclick="openExport()">
-                        <i class="fa-solid fa-arrow-up-right-from-square me-2"></i> <?php _e('Export', 'swp-label-studio'); ?>
-                    </button>
-                </div>
-            </div>
+<div class="action-bar">
+  <div class="action-left">
+    <button class="icon-btn" data-action="undo" title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+    <button class="icon-btn" data-action="redo" title="Redo (Ctrl+Shift+Z)"><i class="fa-solid fa-rotate-right"></i></button>
+    <div class="vr-separator"></div>
+    <button class="icon-btn" data-action="copyObj" title="Copy (Ctrl+C)"><i class="fa-regular fa-copy"></i></button>
+    <button class="icon-btn" data-action="pasteObj" title="Paste (Ctrl+V)"><i class="fa-regular fa-clipboard"></i></button>
+    <button class="icon-btn danger" data-action="deleteObj" title="Delete (Del)"><i class="fa-solid fa-trash"></i></button>
+    <div class="vr-separator"></div>
+    <button class="icon-btn" id="gridBtn" data-action="toggleGrid" title="Toggle grid (Ctrl+G)"><i class="fa-solid fa-border-all"></i></button>
+    <button class="icon-btn" id="snapBtn" data-action="toggleSnap" title="Snap on/off"><i class="fa-solid fa-magnet"></i></button>
+    <button class="icon-btn" id="guidesBtn" data-action="toggleGuides" title="Center guides"><i class="fa-solid fa-crosshairs"></i></button>
+    <div class="vr-separator"></div>
+    <button class="icon-btn" id="safeBtn" data-action="toggleSafe" title="Safe area overlay"><i class="fa-solid fa-shield-halved"></i></button>
+    <button class="icon-btn" id="bleedBtn" data-action="toggleBleed" title="Bleed overlay"><i class="fa-solid fa-scissors"></i></button>
+    <div class="vr-separator"></div>
+    <button class="icon-btn" data-action="centerActive" title="Center selected"><i class="fa-solid fa-bullseye"></i></button>
+    <button class="icon-btn" data-action="fitToStage" title="Fit to screen"><i class="fa-solid fa-expand"></i></button>
+    <button class="icon-btn" data-action="resetCanvas" title="Reset canvas"><i class="fa-solid fa-eraser"></i></button>
+  </div>
+  <div class="action-right">
+    <button class="btn btn-light border rounded-pill fw-bold px-3" data-action="quickAddBrandBlock">
+      <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Brand Block
+    </button>
+    <button class="btn btn-primary rounded-pill fw-bold px-3" data-action="openExport">
+      <i class="fa-solid fa-arrow-up-right-from-square me-2"></i> Export
+    </button>
+  </div>
+</div>
 
             <div class="canvas-area">
                 <div class="canvas-wrapper" id="canvasWrapper">

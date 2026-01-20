@@ -1,48 +1,5 @@
 (function ($) {
     'use strict';
-    // LAUNCH DESIGNER BUTTON - Works on Product Pages
-    $(document).on('click', '.swp-launch-designer', function (e) {
-        e.preventDefault();
-        console.log('Launch Designer clicked');
-
-        const productId = $(this).data('product-id');
-        console.log('Product ID:', productId);
-
-        if (!productId) {
-            alert('Product ID missing');
-            return;
-        }
-
-        // Show loading state
-        const $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Loading...');
-
-        $.ajax({
-            url: swp_ls_vars.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'swp_ls_set_product',
-                nonce: swp_ls_vars.nonce,
-                product_id: productId
-            },
-            success: function (res) {
-                console.log('AJAX success:', res);
-                if (res.success && res.data.designer_url) {
-                    console.log('Redirecting to designer:', res.data.designer_url);
-                    window.location.href = res.data.designer_url;
-                } else {
-                    alert(res.data || 'Failed to launch designer');
-                    $btn.prop('disabled', false).html('Launch Designer');
-                }
-            },
-            error: function (err) {
-                console.error('AJAX error:', err);
-                alert('Network error. Please try again.');
-                $btn.prop('disabled', false).html('Launch Designer');
-            }
-        });
-    });
-
     // ============================================
     // DESIGNER INTERFACE - Only runs when canvas exists
     // ============================================
@@ -79,6 +36,19 @@
         let historyIndex = -1;
         let historyProcessing = false;
         let zoomLevel = 1;
+        let snapEnabled = false;
+        let guidesEnabled = false;
+        let bleedEnabled = false;
+
+        // Helper function to clamp numbers
+        function clampNum(val, min, max) {
+            return Math.min(Math.max(val, min), max);
+        }
+
+        // Helper function to get active object
+        function getActiveOne() {
+            return canvas.getActiveObject();
+        }
 
         // === HISTORY ===
         function saveHistory() {
@@ -180,8 +150,6 @@
             const $app = $('#swp-ls-designer-app');
             const productImage = $app.data('image');
 
-            console.log('Product Image URL:', productImage);
-
             if (!productImage || productImage === '') {
                 console.warn('No product image URL provided');
                 alert('No product image available');
@@ -234,9 +202,182 @@
             }, { crossOrigin: 'anonymous' });
         };
 
+        // === CLIPART ===
+        const CLIPART = [
+            { key: "drop", name: "Water drop" },
+            { key: "leaf", name: "Leaf" },
+            { key: "mountain", name: "Mountain" },
+            { key: "wave", name: "Wave" },
+            { key: "sparkle", name: "Sparkle" },
+            { key: "badge", name: "Badge" },
+            { key: "recycle", name: "Recycle" },
+            { key: "heart", name: "Heart" },
+        ];
+
         window.showClipArtModal = function () {
-            alert('Clipart library coming soon!');
+            buildClipartGrid();
+            const modal = new bootstrap.Modal(document.getElementById('clipModal'));
+            modal.show();
         };
+
+        function buildClipartGrid() {
+            const grid = document.getElementById("clipGrid");
+            grid.innerHTML = "";
+
+            CLIPART.forEach(item => {
+                const col = document.createElement("div");
+                col.className = "col-6 col-md-3";
+                col.innerHTML = `
+                    <div class="clipart-card p-3 border rounded-4 bg-white h-100" style="cursor:pointer; transition: all 0.3s ease; box-shadow:0 12px 22px rgba(15,23,42,0.06);">
+                        <div class="d-flex align-items-center justify-content-center" style="height:72px;">
+                            ${clipartInlineSVG(item.key, "#0f172a")}
+                        </div>
+                        <div class="text-center fw-bold mt-2" style="font-size:0.9rem;">${item.name}</div>
+                    </div>
+                `;
+
+                const card = col.querySelector('.clipart-card');
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-4px)';
+                    this.style.boxShadow = '0 20px 40px rgba(15,23,42,0.12)';
+                });
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 12px 22px rgba(15,23,42,0.06)';
+                });
+                card.addEventListener("click", () => addClipart(item.key));
+
+                grid.appendChild(col);
+            });
+        }
+
+        function addClipart(key) {
+            const svgString = clipartSVGString(key, "#0f172a");
+
+            fabric.loadSVGFromString(svgString, function (objects, options) {
+                const obj = fabric.util.groupSVGElements(objects, options);
+
+                obj.set({
+                    left: 100,
+                    top: 150,
+                    scaleX: 1.2,
+                    scaleY: 1.2,
+                    opacity: 0.95
+                });
+
+                obj.name = CLIPART.find(c => c.key === key)?.name || 'Clipart';
+
+                canvas.add(obj);
+                canvas.setActiveObject(obj);
+                canvas.renderAll();
+                saveHistory();
+
+                bootstrap.Modal.getInstance(document.getElementById('clipModal')).hide();
+            });
+        }
+
+        window.addWatermarkStamp = function () {
+            const ring = new fabric.Circle({
+                left: 72,
+                top: 98,
+                radius: 82,
+                fill: "transparent",
+                stroke: "rgba(0,102,255,0.65)",
+                strokeWidth: 5
+            });
+
+            const txt = new fabric.IText("PURE", {
+                left: 116,
+                top: 138,
+                fontFamily: "Plus Jakarta Sans",
+                fontSize: 46,
+                fontWeight: "800",
+                fill: "rgba(0,102,255,0.9)"
+            });
+
+            const sub = new fabric.IText("SPRINGWATER", {
+                left: 104,
+                top: 190,
+                fontFamily: "Plus Jakarta Sans",
+                fontSize: 12,
+                fontWeight: "800",
+                fill: "rgba(0,102,255,0.85)",
+                charSpacing: 260
+            });
+
+            const group = new fabric.Group([ring, txt, sub], {
+                left: 56,
+                top: 110
+            });
+
+            group.name = "Stamp";
+
+            canvas.add(group);
+            canvas.setActiveObject(group);
+            canvas.renderAll();
+            saveHistory();
+
+            bootstrap.Modal.getInstance(document.getElementById('clipModal')).hide();
+        };
+
+        function clipartInlineSVG(key, color) {
+            return clipartSVGString(key, color);
+        }
+
+        function clipartSVGString(key, color) {
+            const svgs = {
+                drop: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 10 C35 30, 20 50, 20 65 C20 80, 33 90, 50 90 C67 90, 80 80, 80 65 C80 50, 65 30, 50 10 Z" 
+                          fill="${color}" opacity="0.9"/>
+                    <ellipse cx="40" cy="50" rx="8" ry="12" fill="white" opacity="0.3"/>
+                </svg>`,
+                leaf: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 10 Q80 30, 85 60 Q85 80, 65 90 Q50 95, 50 95 Q50 95, 35 90 Q15 80, 15 60 Q20 30, 50 10 Z" 
+                          fill="${color}" opacity="0.9"/>
+                    <path d="M50 20 L50 85" stroke="white" stroke-width="2" opacity="0.4"/>
+                    <path d="M50 35 Q65 45, 70 55" stroke="white" stroke-width="1.5" opacity="0.3" fill="none"/>
+                    <path d="M50 35 Q35 45, 30 55" stroke="white" stroke-width="1.5" opacity="0.3" fill="none"/>
+                </svg>`,
+                mountain: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 80 L35 35 L50 55 L75 20 L90 80 Z" fill="${color}" opacity="0.9"/>
+                    <path d="M35 35 L42 45 L45 35 Z" fill="white" opacity="0.6"/>
+                    <circle cx="75" cy="25" r="3" fill="white" opacity="0.5"/>
+                </svg>`,
+                wave: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 50 Q20 30, 40 50 T80 50 T120 50" stroke="${color}" stroke-width="8" fill="none" opacity="0.9"/>
+                    <path d="M0 65 Q20 45, 40 65 T80 65 T120 65" stroke="${color}" stroke-width="6" fill="none" opacity="0.6"/>
+                    <path d="M0 77 Q20 57, 40 77 T80 77 T120 77" stroke="${color}" stroke-width="4" fill="none" opacity="0.3"/>
+                </svg>`,
+                sparkle: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 10 L55 45 L90 50 L55 55 L50 90 L45 55 L10 50 L45 45 Z" fill="${color}" opacity="0.9"/>
+                    <circle cx="50" cy="50" r="8" fill="white" opacity="0.6"/>
+                    <path d="M75 25 L78 35 L88 38 L78 41 L75 51 L72 41 L62 38 L72 35 Z" fill="${color}" opacity="0.7"/>
+                    <path d="M25 75 L27 82 L34 84 L27 86 L25 93 L23 86 L16 84 L23 82 Z" fill="${color}" opacity="0.7"/>
+                </svg>`,
+                badge: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="35" fill="${color}" opacity="0.9"/>
+                    <circle cx="50" cy="50" r="28" fill="none" stroke="white" stroke-width="2" opacity="0.6"/>
+                    <path d="M50 25 L54 40 L70 42 L58 52 L62 67 L50 59 L38 67 L42 52 L30 42 L46 40 Z" 
+                          fill="white" opacity="0.8"/>
+                </svg>`,
+                recycle: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 20 L35 45 L50 45 L50 70 L65 45 L50 45 Z" fill="${color}" opacity="0" 
+                          stroke="${color}" stroke-width="6"/>
+                    <path d="M50 25 L60 40 M50 75 L40 60" stroke="${color}" stroke-width="6" opacity="0.9"/>
+                    <circle cx="50" cy="50" r="30" fill="none" stroke="${color}" stroke-width="5" 
+                            opacity="0.8" stroke-dasharray="10 5"/>
+                    <path d="M75 35 L82 42 L85 33 Z" fill="${color}" opacity="0.9"/>
+                    <path d="M25 65 L18 58 L15 67 Z" fill="${color}" opacity="0.9"/>
+                </svg>`,
+                heart: `<svg viewBox="0 0 100 100" width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 85 C50 85, 20 60, 20 40 C20 25, 30 20, 37 20 C44 20, 50 25, 50 25 
+                             C50 25, 56 20, 63 20 C70 20, 80 25, 80 40 C80 60, 50 85, 50 85 Z" 
+                          fill="${color}" opacity="0.9"/>
+                    <path d="M37 30 Q32 30, 30 35" stroke="white" stroke-width="2" opacity="0.4" fill="none"/>
+                </svg>`
+            };
+            return svgs[key] || svgs.drop;
+        }
 
         // === BACKGROUND ===
         window.setBg = function (color) {
@@ -245,20 +386,81 @@
             saveHistory();
         };
 
-        // === DELETE ===
-        window.deleteObj = function () {
-            const active = canvas.getActiveObjects();
-            if (active.length) {
-                canvas.discardActiveObject();
-                active.forEach(obj => canvas.remove(obj));
-                canvas.renderAll();
-                saveHistory();
-                updatePropsPanel();
-                renderLayers();
-            }
+        // === COPY PASTE DELETE ===
+        let _clipboard = null;
+
+        window.copyObj = function () {
+            const active = canvas.getActiveObject();
+            if (!active) return;
+
+            active.clone(function (cloned) {
+                _clipboard = cloned;
+                $('#statusText').text('Copied');
+                setTimeout(() => {
+                    $('#statusText').text('Saved');
+                }, 1000);
+            });
         };
 
-        // === OVERLAYS ===
+        window.pasteObj = function () {
+            if (!_clipboard) return;
+
+            _clipboard.clone(function (clonedObj) {
+                canvas.discardActiveObject();
+
+                clonedObj.set({
+                    left: (clonedObj.left || 0) + 15,
+                    top: (clonedObj.top || 0) + 15,
+                    evented: true
+                });
+
+                if (clonedObj.type === "activeSelection") {
+                    clonedObj.canvas = canvas;
+                    clonedObj.forEachObject(function (obj) {
+                        canvas.add(obj);
+                    });
+                    clonedObj.setCoords();
+                } else {
+                    canvas.add(clonedObj);
+                }
+
+                _clipboard.top += 15;
+                _clipboard.left += 15;
+
+                canvas.setActiveObject(clonedObj);
+                canvas.renderAll();
+                saveHistory();
+
+                $('#statusText').text('Pasted');
+                setTimeout(() => {
+                    $('#statusText').text('Unsaved');
+                }, 1000);
+            });
+        };
+
+        window.deleteObj = function () {
+            const active = canvas.getActiveObjects();
+            if (!active || !active.length) return;
+
+            canvas.discardActiveObject();
+            active.forEach(function (obj) {
+                canvas.remove(obj);
+            });
+
+            canvas.renderAll();
+            saveHistory();
+            updatePropsPanel();
+            renderLayers();
+        };
+
+        window.duplicateObj = function () {
+            copyObj();
+            setTimeout(() => {
+                pasteObj();
+            }, 50);
+        };
+
+        // === OVERLAYS & TOGGLES ===
         window.toggleGrid = function () {
             $('#gridOverlay').toggleClass('show');
             $('#gridBtn').toggleClass('active');
@@ -267,6 +469,79 @@
         window.toggleSafe = function () {
             $('#safeOverlay').toggleClass('show');
             $('#safeBtn').toggleClass('active');
+        };
+
+        window.toggleSnap = function () {
+            snapEnabled = !snapEnabled;
+            $('#snapBtn').toggleClass('active', snapEnabled);
+        };
+
+        window.toggleGuides = function () {
+            guidesEnabled = !guidesEnabled;
+            $('#guidesBtn').toggleClass('active', guidesEnabled);
+
+            // Create guides overlay if it doesn't exist
+            let $guides = $('#centerGuidesOverlay');
+            if (!$guides.length) {
+                $guides = $('<div id="centerGuidesOverlay" class="center-guides-overlay"></div>');
+                $('#canvasWrapper').append($guides);
+            }
+            $guides.toggleClass('show', guidesEnabled);
+        };
+
+        window.toggleBleed = function () {
+            bleedEnabled = !bleedEnabled;
+            $('#bleedBtn').toggleClass('active', bleedEnabled);
+
+            // Create bleed overlay if it doesn't exist
+            let $bleed = $('#bleedOverlay');
+            if (!$bleed.length) {
+                $bleed = $('<div id="bleedOverlay" class="bleed-overlay"></div>');
+                $('#canvasWrapper').append($bleed);
+            }
+            $bleed.toggleClass('show', bleedEnabled);
+        };
+
+        // === CENTER ACTIVE OBJECT ===
+        window.centerActive = function () {
+            const obj = getActiveOne();
+            if (!obj) {
+                alert('Please select an object first');
+                return;
+            }
+
+            canvas.viewportCenterObject(obj);
+            obj.setCoords();
+            canvas.renderAll();
+            saveHistory();
+            updatePropsPanel();
+        };
+
+        // === FIT TO STAGE ===
+        window.fitToStage = function () {
+            const area = document.querySelector(".canvas-area");
+            if (!area) return;
+
+            const rect = area.getBoundingClientRect();
+            const padding = 44;
+            const scaleX = (rect.width - padding) / CANVAS_W;
+            const scaleY = (rect.height - padding) / CANVAS_H;
+            zoomLevel = Math.min(scaleX, scaleY, 2.2);
+            zoomLevel = clampNum(zoomLevel, 0.6, 2.2);
+            applyZoom();
+        };
+
+        // === RESET CANVAS ===
+        window.resetCanvas = function () {
+            if (!confirm("Clear current design?")) return;
+
+            canvas.discardActiveObject();
+            canvas.clear();
+            canvas.backgroundColor = "#ffffff";
+            canvas.renderAll();
+            saveHistory();
+            updatePropsPanel();
+            renderLayers();
         };
 
         // === ZOOM ===
@@ -454,18 +729,42 @@
             }
         };
 
-        // === PREVIEW FUNCTION ===
+        // === PREVIEW ===
+        let previewModalInstance = null;
+        let isPreviewOpen = false;
+
         window.showPreview = function () {
-            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            if (!canvas) return;
+
             const previewData = canvas.toDataURL({
                 format: 'png',
                 multiplier: 2
             });
-            $('#previewImage').attr('src', previewData);
-            modal.show();
+
+            document.getElementById('previewImage').src = previewData;
+
+            if (!isPreviewOpen) {
+                previewModalInstance = new bootstrap.Modal(document.getElementById('previewModal'));
+                previewModalInstance.show();
+                isPreviewOpen = true;
+
+                document.getElementById('previewModal').addEventListener('hidden.bs.modal', function () {
+                    isPreviewOpen = false;
+                });
+            }
         };
 
-        // === EXPORT FUNCTIONS ===
+        function updatePreviewIfOpen() {
+            if (isPreviewOpen && canvas) {
+                const previewData = canvas.toDataURL({
+                    format: 'png',
+                    multiplier: 2
+                });
+                document.getElementById('previewImage').src = previewData;
+            }
+        }
+
+        // === EXPORT ===
         window.openExport = function () {
             const modal = new bootstrap.Modal(document.getElementById('exportModal'));
 
@@ -510,7 +809,7 @@
             pdf.save('label-design-' + Date.now() + '.pdf');
         };
 
-        // === DRAFTS FUNCTIONS ===
+        // === DRAFTS ===
         window.openDrafts = function () {
             const modal = new bootstrap.Modal(document.getElementById('draftsModal'));
             loadDraftsList();
@@ -671,7 +970,7 @@
             const qty = parseInt($app.data('qty')) || 1;
 
             if (!productId) {
-                alert('Product ID missing');
+                alert('Product ID missing. Please go back and launch designer from product page.');
                 return;
             }
 
@@ -708,7 +1007,7 @@
                     }
                 },
                 error: function (xhr) {
-                    console.error(xhr.responseText);
+                    console.error('AJAX error:', xhr.responseText);
                     alert('Network error. Please try again.');
                     $('#statusText').text('Error');
                     $('#swp-ls-add-to-cart').prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
@@ -723,46 +1022,99 @@
         };
 
         // === EVENT LISTENERS ===
-        canvas.on('object:modified', saveHistory);
-        canvas.on('object:added', (e) => {
-            if (!historyProcessing) saveHistory();
+        canvas.on('object:modified', function () {
+            saveHistory();
+            updatePreviewIfOpen();
         });
-        canvas.on('object:removed', saveHistory);
+
+        canvas.on('object:added', function (e) {
+            if (!historyProcessing) saveHistory();
+            updatePreviewIfOpen();
+        });
+
+        canvas.on('object:removed', function () {
+            saveHistory();
+            updatePreviewIfOpen();
+        });
+
         canvas.on('selection:created', () => {
             updatePropsPanel();
             renderLayers();
         });
+
         canvas.on('selection:updated', () => {
             updatePropsPanel();
             renderLayers();
         });
+
         canvas.on('selection:cleared', () => {
             updatePropsPanel();
             renderLayers();
         });
 
-        // Keyboard shortcuts
+        canvas.on('object:scaling', updatePreviewIfOpen);
+        canvas.on('object:moving', updatePreviewIfOpen);
+        canvas.on('object:rotating', updatePreviewIfOpen);
+        canvas.on('text:changed', updatePreviewIfOpen);
+
+        canvas.on('after:render', function () {
+            if (isPreviewOpen) {
+                clearTimeout(window.previewDebounce);
+                window.previewDebounce = setTimeout(updatePreviewIfOpen, 100);
+            }
+        });
+
+        // === KEYBOARD SHORTCUTS ===
         $(document).on('keydown', function (e) {
             const isMac = navigator.platform.toUpperCase().includes('MAC');
             const ctrl = isMac ? e.metaKey : e.ctrlKey;
 
+            // Undo
             if (ctrl && e.key.toLowerCase() === 'z' && !e.shiftKey) {
                 e.preventDefault();
                 undo();
             }
+
+            // Redo
             if (ctrl && e.key.toLowerCase() === 'z' && e.shiftKey) {
                 e.preventDefault();
                 redo();
             }
+
+            // Copy
+            if (ctrl && e.key.toLowerCase() === 'c' && !e.shiftKey) {
+                const active = canvas.getActiveObject();
+                if (active && !(active.isEditing || (active.type === 'i-text' && active.hiddenTextarea))) {
+                    e.preventDefault();
+                    copyObj();
+                }
+            }
+
+            // Paste
+            if (ctrl && e.key.toLowerCase() === 'v') {
+                e.preventDefault();
+                pasteObj();
+            }
+
+            // Duplicate
+            if (ctrl && e.key.toLowerCase() === 'd') {
+                e.preventDefault();
+                duplicateObj();
+            }
+
+            // Toggle Grid
             if (ctrl && e.key.toLowerCase() === 'g') {
                 e.preventDefault();
                 toggleGrid();
             }
+
+            // Save Draft
             if (ctrl && e.key.toLowerCase() === 's') {
                 e.preventDefault();
                 saveDraftPrompt();
             }
 
+            // Delete
             if (e.key === 'Delete' || e.key === 'Backspace') {
                 const active = canvas.getActiveObject();
                 if (active && !(active.isEditing || (active.type === 'i-text' && active.hiddenTextarea))) {
@@ -770,9 +1122,45 @@
                     deleteObj();
                 }
             }
+
+            // Arrow key nudging
+            const active = canvas.getActiveObject();
+            if (active && !(active.isEditing || (active.type === 'i-text' && active.hiddenTextarea))) {
+                const nudgeAmount = e.shiftKey ? 10 : 1;
+                let moved = false;
+
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        e.preventDefault();
+                        active.left -= nudgeAmount;
+                        moved = true;
+                        break;
+                    case 'ArrowRight':
+                        e.preventDefault();
+                        active.left += nudgeAmount;
+                        moved = true;
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        active.top -= nudgeAmount;
+                        moved = true;
+                        break;
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        active.top += nudgeAmount;
+                        moved = true;
+                        break;
+                }
+
+                if (moved) {
+                    active.setCoords();
+                    canvas.renderAll();
+                    saveHistory();
+                }
+            }
         });
 
-        // === ADD TO CART BUTTON HANDLER ===
+        // === ADD TO CART BUTTON ===
         $(document).on('click', '#swp-ls-add-to-cart', function (e) {
             e.preventDefault();
             saveAndAddToCart();
@@ -782,16 +1170,10 @@
         function init() {
             const $app = $('#swp-ls-designer-app');
             const loadProductImg = $app.data('load-product-image');
-            const productImage = $app.data('image');
 
-            console.log('Has product image:', loadProductImg);
-            console.log('Product image URL:', productImage);
-
-            // Auto-load product image if available
             if (loadProductImg === true || loadProductImg === 'true') {
                 loadProductImage();
             } else {
-            // No product image, load default template
                 loadTemplate('minimal');
             }
 

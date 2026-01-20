@@ -103,7 +103,13 @@ class SWP_Label_Studio
 		// Vendor Scripts
 		wp_enqueue_script('fabric', SWP_LS_URL . 'assets/vendor/fabric/fabric.min.js', array(), '5.3.1', true);
 		wp_enqueue_script('jspdf', SWP_LS_URL . 'assets/vendor/jspdf/jspdf.umd.min.js', array(), '2.5.1', true);
-
+		wp_enqueue_script(
+			'swp-ls-frontend',
+			SWP_LS_URL . 'assets/js/frontend.js',
+			['jquery'],
+			SWP_LS_VERSION,
+			true
+		);
 		// Designer JS
 		wp_enqueue_script('swp-ls-designer', SWP_LS_URL . 'assets/js/designer.js', array('jquery', 'fabric', 'jspdf'), SWP_LS_VERSION, true);
 

@@ -151,3 +151,62 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
     </div>
 </div>
+<!-- PREVIEW MODAL -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px; overflow:hidden;">
+            <div class="modal-header">
+                <div class="d-flex align-items-center gap-2">
+                    <h5 class="modal-title fs-6 fw-bold mb-0"><?php _e('Live Preview', 'swp-label-studio'); ?></h5>
+                    <span class="badge bg-success rounded-pill">
+                        <i class="fa-solid fa-circle-dot fa-fade"></i> <?php _e('Live', 'swp-label-studio'); ?>
+                    </span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 500px; display: flex; align-items: center; justify-content: center;">
+                <div style="background: white; padding: 20px; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.1);">
+                    <img id="previewImage" alt="<?php _e('Preview', 'swp-label-studio'); ?>" style="max-width:100%; max-height: 600px; border-radius: 12px; display: block;">
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <div class="text-muted small">
+                    <i class="fa-solid fa-info-circle me-1"></i>
+                    <?php _e('Preview updates automatically as you edit', 'swp-label-studio'); ?>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                        <?php _e('Close', 'swp-label-studio'); ?>
+                    </button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="openExport()">
+                        <i class="fa-solid fa-download me-2"></i><?php _e('Export', 'swp-label-studio'); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CLIPART MODAL - Replace in modals.php -->
+<div class="modal fade" id="clipModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px; overflow:hidden;">
+            <div class="modal-header">
+                <h5 class="modal-title fs-6 fw-bold"><?php _e( 'Clipart Library', 'swp-label-studio' ); ?></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-3">
+                    <div class="text-muted">
+                        <i class="fa-solid fa-hand-pointer me-1"></i>
+                        <?php _e( 'Click any icon to add it to your label.', 'swp-label-studio' ); ?>
+                    </div>
+                    <button class="btn btn-light border rounded-pill fw-bold btn-sm" onclick="addWatermarkStamp()">
+                        <i class="fa-solid fa-stamp me-2"></i><?php _e( 'Add "PURE" Stamp', 'swp-label-studio' ); ?>
+                    </button>
+                </div>
+                <div class="row g-3" id="clipGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
