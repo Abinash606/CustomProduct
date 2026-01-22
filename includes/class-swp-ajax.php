@@ -91,10 +91,11 @@ class SWP_Label_Studio_Ajax
 			$product_id = WC()->session->get('swp_ls_product_id');
 		}
 
-		$qty          = absint($_POST['qty'] ?? 1);
+		$qty = absint($_POST['qty'] ?? 1);
 		$variation_id = absint($_POST['variation_id'] ?? 0);
-		$design_json  = wp_unslash($_POST['design_json'] ?? '');
-		$design_png   = $_POST['design_png'] ?? '';
+		$design_json = wp_unslash($_POST['design_json'] ?? '');
+		$design_png = $_POST['design_png'] ?? '';
+		$custom_price = isset($_POST['price']) ? floatval($_POST['price']) : 0;
 
 		if (!$product_id) {
 			wp_send_json_error(__('No product found. Please go back and launch designer again.', 'swp-label-studio'));
@@ -106,9 +107,20 @@ class SWP_Label_Studio_Ajax
 			wp_send_json_error(__('Product not found.', 'swp-label-studio'));
 		}
 
-		// If it's a variable product and no variation is selected, error
-		if ($product->is_type('variable') && !$variation_id) {
-			wp_send_json_error(__('Please select a product variant.', 'swp-label-studio'));
+		// Only validate variation if product is variable AND has available variations
+		if ($product->is_type('variable')) {
+			$available_variations = $product->get_available_variations();
+
+			// If product has variations but none selected, error
+			if (!empty($available_variations) && !$variation_id) {
+				wp_send_json_error(__('Please select a product variant.', 'swp-label-studio'));
+			}
+		}
+
+		// Validate custom price
+		if ($custom_price <= 0) {
+			error_log('SWP Label Studio - Invalid price received: ' . $custom_price);
+			wp_send_json_error(__('Invalid price calculated. Please try again.', 'swp-label-studio'));
 		}
 
 		// Validate JSON
@@ -124,7 +136,6 @@ class SWP_Label_Studio_Ajax
 		$upload_dir = wp_upload_dir();
 		$base_dir = $upload_dir['basedir'] . '/' . SWP_LS_UPLOAD_DIR . '/' . $design_id;
 		$base_url = $upload_dir['baseurl'] . '/' . SWP_LS_UPLOAD_DIR . '/' . $design_id;
-
 		wp_mkdir_p($base_dir);
 
 		// Save JSON file
@@ -142,9 +153,11 @@ class SWP_Label_Studio_Ajax
 
 		// Prepare cart item data with design information
 		$cart_item_data = array(
-			'swp_ls_design_id'        => $design_id,
-			'swp_ls_design_json_url'  => $base_url . '/design.json',
-			'swp_ls_design_png_url'   => $png_url,
+			'swp_ls_design_id' => $design_id,
+			'swp_ls_design_json_url' => $base_url . '/design.json',
+			'swp_ls_design_png_url' => $png_url,
+			'swp_ls_price' => $custom_price,
+			'unique_key' => md5(microtime() . rand())
 		);
 
 		// Get variation attributes if this is a variable product
@@ -161,8 +174,8 @@ class SWP_Label_Studio_Ajax
 			$product_id,
 			$qty,
 			$variation_id,
-			$variation_data, // Pass variation attributes
-			$cart_item_data  // Pass the design data
+			$variation_data,
+			$cart_item_data
 		);
 
 		if (!$cart_item_key) {
@@ -170,14 +183,19 @@ class SWP_Label_Studio_Ajax
 			wp_send_json_error(__('Failed to add to cart. Please try again.', 'swp-label-studio'));
 		}
 
+		// Verify the price was set in cart
+		$cart_item = WC()->cart->get_cart()[$cart_item_key];
+		error_log('SWP Label Studio - Cart item price: ' . $cart_item['data']->get_price());
+
 		// Clear session product ID
 		WC()->session->set('swp_ls_product_id', null);
 
 		wp_send_json_success(array(
-			'cart_url'  => wc_get_cart_url(),
-			'png_url'   => $png_url,
+			'cart_url' => wc_get_cart_url(),
+			'png_url' => $png_url,
 			'design_id' => $design_id,
-			'message'   => __('Design added to cart successfully!', 'swp-label-studio')
+			'price' => $custom_price,
+			'message' => __('Design added to cart successfully!', 'swp-label-studio')
 		));
 	}
 }

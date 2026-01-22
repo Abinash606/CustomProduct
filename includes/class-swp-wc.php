@@ -161,36 +161,36 @@ class SWP_Label_Studio_WC
 		}
 
 ?>
-		<div class="swp-launch-designer-wrapper">
-			<button type="button" class="swp-launch-designer" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
-				<i class="fa-solid fa-wand-magic-sparkles"></i>
-				<span><?php esc_html_e('Design Your Label', 'swp-label-studio'); ?></span>
-				<i class="fa-solid fa-arrow-right"></i>
-			</button>
+<div class="swp-launch-designer-wrapper">
+    <button type="button" class="swp-launch-designer" data-product-id="<?php echo esc_attr($product->get_id()); ?>">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+        <span><?php esc_html_e('Design Your Label', 'swp-label-studio'); ?></span>
+        <i class="fa-solid fa-arrow-right"></i>
+    </button>
 
-			<div class="swp-designer-features">
-				<div class="swp-feature-item">
-					<i class="fa-solid fa-palette"></i>
-					<span><?php esc_html_e('Custom Templates', 'swp-label-studio'); ?></span>
-				</div>
-				<div class="swp-feature-item">
-					<i class="fa-solid fa-images"></i>
-					<span><?php esc_html_e('Add Your Photos', 'swp-label-studio'); ?></span>
-				</div>
-				<div class="swp-feature-item">
-					<i class="fa-solid fa-text"></i>
-					<span><?php esc_html_e('Custom Text & Fonts', 'swp-label-studio'); ?></span>
-				</div>
-				<div class="swp-feature-item">
-					<i class="fa-solid fa-qrcode"></i>
-					<span><?php esc_html_e('QR Codes & Graphics', 'swp-label-studio'); ?></span>
-				</div>
-				<div class="swp-feature-item">
-					<i class="fa-solid fa-eye"></i>
-					<span><?php esc_html_e('Live Preview', 'swp-label-studio'); ?></span>
-				</div>
-			</div>
-		</div>
+    <div class="swp-designer-features">
+        <div class="swp-feature-item">
+            <i class="fa-solid fa-palette"></i>
+            <span><?php esc_html_e('Custom Templates', 'swp-label-studio'); ?></span>
+        </div>
+        <div class="swp-feature-item">
+            <i class="fa-solid fa-images"></i>
+            <span><?php esc_html_e('Add Your Photos', 'swp-label-studio'); ?></span>
+        </div>
+        <div class="swp-feature-item">
+            <i class="fa-solid fa-text"></i>
+            <span><?php esc_html_e('Custom Text & Fonts', 'swp-label-studio'); ?></span>
+        </div>
+        <div class="swp-feature-item">
+            <i class="fa-solid fa-qrcode"></i>
+            <span><?php esc_html_e('QR Codes & Graphics', 'swp-label-studio'); ?></span>
+        </div>
+        <div class="swp-feature-item">
+            <i class="fa-solid fa-eye"></i>
+            <span><?php esc_html_e('Live Preview', 'swp-label-studio'); ?></span>
+        </div>
+    </div>
+</div>
 <?php
 	}
 

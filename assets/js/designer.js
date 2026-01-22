@@ -967,24 +967,36 @@
             const $btn = $('#swp-ls-add-to-cart');
             const productId = parseInt($btn.data('product-id'));
             const qty = parseInt($('#swp-ls-qty').val()) || 1;
-            const variationId = parseInt($('#swp-ls-variation').val()) || 0;
+            const $variantSelect = $('#swp-ls-variation');
+            const variationId = parseInt($variantSelect.val()) || 0;
+
             // Validate product ID
             if (!productId) {
                 alert('Product ID missing. Please go back and launch designer from product page.');
                 return;
             }
 
-            // Validate variation selection if dropdown exists
-            if ($('#swp-ls-variation').length && !variationId) {
-                alert('Please select a product variant.');
-                return;
-            }
+            if ($variantSelect.length && !$variantSelect.prop('disabled')) {
+                const hasVariants = $variantSelect.find('option[value!=""]').length > 0;
+
+                if (hasVariants && !variationId) {
+                    alert('Please select a product variant.');
+            // Highlight the variant selector
+            $variantSelect.focus();
+            $variantSelect.css('border-color', '#ef4444');
+            setTimeout(() => $variantSelect.css('border-color', ''), 2000);
+            return;
+        }
+    }
 
             const jsonData = JSON.stringify(swpLsCanvas.toJSON(['name']));
             const pngData = swpLsCanvas.toDataURL({
                 format: 'png',
                 multiplier: 2
             });
+
+            // Get the calculated total price from the function
+            const totalPrice = window.swpLsUpdateTotal();
 
             // Show loading state
             $('#statusText').text('Saving...');
@@ -997,35 +1009,36 @@
                     action: 'swp_ls_save_design',
                     nonce: swp_ls_vars.nonce,
                     product_id: productId,
-                    variation_id: variationId, 
+                    variation_id: variationId,
                     qty: qty,
-                    design_json: jsonData,
-                    design_png: pngData
-                },
-                success: function (response) {
-
-                    if (response.success && response.data.cart_url) {
-                        $('#statusText').text('Success!');
-                        window.location.href = response.data.cart_url;
-                    } else {
-                        console.error('Error response:', response);
-                        alert(response.data || 'Failed to add product to cart');
-                        $('#statusText').text('Error');
-                        $btn.prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX error:', {
-                        xhr: xhr,
-                        status: status,
-                        error: error,
-                        responseText: xhr.responseText
-                    });
-                    alert('Network error. Please try again.');
-                    $('#statusText').text('Error');
-                    $btn.prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
-                }
+            price: totalPrice,
+            design_json: jsonData,
+            design_png: pngData
+        },
+        success: function (response) {
+            console.log('AJAX response:', response);
+            if (response.success && response.data.cart_url) {
+                $('#statusText').text('Success!');
+                window.location.href = response.data.cart_url;
+            } else {
+                console.error('Error response:', response);
+                alert(response.data || 'Failed to add product to cart');
+                $('#statusText').text('Error');
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX error:', {
+                xhr: xhr,
+                status: status,
+                error: error,
+                responseText: xhr.responseText
             });
+            alert('Network error. Please try again.');
+            $('#statusText').text('Error');
+            $btn.prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
+        }
+    });
         };
 
         // === SHORTCUTS ===

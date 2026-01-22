@@ -1,8 +1,9 @@
-
 jQuery(document).ready(function ($) {
     // PRICE, QTY & VARIANT HANDLING
     // ===============================
-    function swpLsUpdateTotal() {
+
+    // Make the total calculation function global
+    window.swpLsUpdateTotal = function () {
         const $totalEl = $('#totalPrice');
         let qty = parseInt($('#swp-ls-qty').val()) || 1;
         let price = parseFloat($totalEl.data('base-price')) || 0;
@@ -30,7 +31,9 @@ jQuery(document).ready(function ($) {
         $totalEl.fadeOut(100, function () {
             $(this).html(formattedTotal).fadeIn(100);
         });
-    }
+
+        return total; // <-- return total so other JS can use it
+    };
 
     // Quantity Control Functions
     function swpLsIncreaseQty() {
@@ -72,12 +75,12 @@ jQuery(document).ready(function ($) {
     }
 
     // Initial calculation
-    swpLsUpdateTotal();
+    window.swpLsUpdateTotal();
     swpLsUpdateMinusButton();
 
     // Update on quantity change
     $('#swp-ls-qty').on('change keyup', function () {
-        swpLsUpdateTotal();
+        window.swpLsUpdateTotal();
         swpLsUpdateMinusButton();
     });
 
@@ -89,7 +92,7 @@ jQuery(document).ready(function ($) {
         $variant.css('border-color', '#3b82f6');
         setTimeout(() => $variant.css('border-color', ''), 300);
 
-        swpLsUpdateTotal();
+        window.swpLsUpdateTotal();
     });
 
     // Plus button click
@@ -106,14 +109,11 @@ jQuery(document).ready(function ($) {
 
     // Keyboard shortcuts for quantity
     $(document).on('keydown', function (e) {
-        // Only if quantity input is focused or no other input is focused
         if ($('#swp-ls-qty').is(':focus') || !$('input, select, textarea').is(':focus')) {
-            // Plus key (+)
             if (e.key === '+' || e.key === '=') {
                 e.preventDefault();
                 swpLsIncreaseQty();
             }
-            // Minus key (-)
             if (e.key === '-') {
                 e.preventDefault();
                 swpLsDecreaseQty();
@@ -121,7 +121,7 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // Prevent manual input (optional - remove if you want to allow typing)
+    // Prevent manual input (optional)
     $('#swp-ls-qty').on('keypress', function (e) {
         e.preventDefault();
         return false;
@@ -144,5 +144,4 @@ jQuery(document).ready(function ($) {
             });
         }
     );
-
 });
