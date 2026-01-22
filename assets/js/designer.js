@@ -763,7 +763,7 @@
                 document.getElementById('previewImage').src = previewData;
             }
         }
-
+      
         // === EXPORT ===
         window.openExport = function () {
             const modal = new bootstrap.Modal(document.getElementById('exportModal'));
@@ -964,13 +964,19 @@
                 return;
             }
 
-            const $app = $('#swp-ls-designer-app');
-            const productId = parseInt($app.data('product-id'));
-            const variationId = parseInt($app.data('variation-id')) || 0;
-            const qty = parseInt($app.data('qty')) || 1;
-
+            const $btn = $('#swp-ls-add-to-cart');
+            const productId = parseInt($btn.data('product-id'));
+            const qty = parseInt($('#swp-ls-qty').val()) || 1;
+            const variationId = parseInt($('#swp-ls-variation').val()) || 0;
+            // Validate product ID
             if (!productId) {
                 alert('Product ID missing. Please go back and launch designer from product page.');
+                return;
+            }
+
+            // Validate variation selection if dropdown exists
+            if ($('#swp-ls-variation').length && !variationId) {
+                alert('Please select a product variant.');
                 return;
             }
 
@@ -980,8 +986,9 @@
                 multiplier: 2
             });
 
+            // Show loading state
             $('#statusText').text('Saving...');
-            $('#swp-ls-add-to-cart').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Adding to Cart...');
+            $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-2"></i>Adding to Cart...');
 
             $.ajax({
                 url: swp_ls_vars.ajax_url,
@@ -990,27 +997,33 @@
                     action: 'swp_ls_save_design',
                     nonce: swp_ls_vars.nonce,
                     product_id: productId,
-                    variation_id: variationId,
+                    variation_id: variationId, 
                     qty: qty,
                     design_json: jsonData,
                     design_png: pngData
                 },
                 success: function (response) {
+
                     if (response.success && response.data.cart_url) {
                         $('#statusText').text('Success!');
                         window.location.href = response.data.cart_url;
                     } else {
-                        console.error(response);
+                        console.error('Error response:', response);
                         alert(response.data || 'Failed to add product to cart');
                         $('#statusText').text('Error');
-                        $('#swp-ls-add-to-cart').prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
+                        $btn.prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
                     }
                 },
-                error: function (xhr) {
-                    console.error('AJAX error:', xhr.responseText);
+                error: function (xhr, status, error) {
+                    console.error('AJAX error:', {
+                        xhr: xhr,
+                        status: status,
+                        error: error,
+                        responseText: xhr.responseText
+                    });
                     alert('Network error. Please try again.');
                     $('#statusText').text('Error');
-                    $('#swp-ls-add-to-cart').prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-cart-plus me-2"></i>Add to Cart');
                 }
             });
         };

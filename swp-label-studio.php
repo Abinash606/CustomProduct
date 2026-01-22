@@ -112,6 +112,22 @@ class SWP_Label_Studio
 		);
 		// Designer JS
 		wp_enqueue_script('swp-ls-designer', SWP_LS_URL . 'assets/js/designer.js', array('jquery', 'fabric', 'jspdf'), SWP_LS_VERSION, true);
+		// Checkout / Price / Variant UI CSS
+		wp_enqueue_style(
+			'swp-ls-checkout',
+			SWP_LS_URL . 'assets/css/swp-label-studio-checkout.css',
+			array('bootstrap'),
+			SWP_LS_VERSION
+		);
+
+		// Checkout / Price / Variant UI JS
+		wp_enqueue_script(
+			'swp-ls-checkout',
+			SWP_LS_URL . 'assets/js/swp-label-studio-checkout.js',
+			array('jquery'),
+			SWP_LS_VERSION,
+			true
+		);
 
 		// Localize Script
 		wp_localize_script('swp-ls-designer', 'swp_ls_vars', array(
@@ -201,3 +217,43 @@ function swp_label_studio()
 }
 
 swp_label_studio();
+
+/**
+ * Allow SVG uploads (Admin only)
+ */
+function swp_ls_allow_svg_uploads($mimes)
+{
+	if (!current_user_can('manage_options')) {
+		return $mimes;
+	}
+	$mimes['svg'] = 'image/svg+xml';
+	return $mimes;
+}
+add_filter('upload_mimes', 'swp_ls_allow_svg_uploads');
+
+/**
+ * Fix SVG upload validation
+ */
+function swp_ls_fix_svg_mime_type($data, $file, $filename, $mimes)
+{
+	if (strtolower(substr($filename, -4)) === '.svg') {
+		$data['ext']  = 'svg';
+		$data['type'] = 'image/svg+xml';
+	}
+	return $data;
+}
+add_filter('wp_check_filetype_and_ext', 'swp_ls_fix_svg_mime_type', 10, 4);
+
+/**
+ * Fix SVG preview in Media Library
+ */
+function swp_ls_svg_media_preview()
+{
+	echo '<style>
+        img[src$=".svg"] {
+            width: 100%;
+            height: auto;
+        }
+    </style>';
+}
+add_action('admin_head', 'swp_ls_svg_media_preview');

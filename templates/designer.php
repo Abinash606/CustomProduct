@@ -122,41 +122,41 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
-<div class="mt-4">
-    <span class="prop-label"><?php _e('Quick align', 'swp-label-studio'); ?></span>
-    
-    <!-- Horizontal Alignment -->
-    <div class="mb-2">
-        <small class="text-muted d-block mb-1"><?php _e('Horizontal', 'swp-label-studio'); ?></small>
-        <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('left')" title="<?php esc_attr_e('Align Left', 'swp-label-studio'); ?>">
-                <i class="fa-solid fa-align-left me-2"></i><?php _e('Left', 'swp-label-studio'); ?>
-            </button>
-            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('center')" title="<?php esc_attr_e('Align Center', 'swp-label-studio'); ?>">
-                <i class="fa-solid fa-align-center me-2"></i><?php _e('Center', 'swp-label-studio'); ?>
-            </button>
-            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('right')" title="<?php esc_attr_e('Align Right', 'swp-label-studio'); ?>">
-                <i class="fa-solid fa-align-right me-2"></i><?php _e('Right', 'swp-label-studio'); ?>
-            </button>
-        </div>
-    </div>
-    
-    <!-- Vertical Alignment -->
-    <div>
-        <small class="text-muted d-block mb-1"><?php _e('Vertical', 'swp-label-studio'); ?></small>
-        <div class="d-flex flex-wrap gap-2">
-            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('top')" title="<?php esc_attr_e('Align Top', 'swp-label-studio'); ?>">
-                <i class="fa-solid fa-arrow-up me-2"></i><?php _e('Top', 'swp-label-studio'); ?>
-            </button>
-            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('middle')" title="<?php esc_attr_e('Align Middle', 'swp-label-studio'); ?>">
-                <i class="fa-solid fa-grip-lines me-2"></i><?php _e('Middle', 'swp-label-studio'); ?>
-            </button>
-            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('bottom')" title="<?php esc_attr_e('Align Bottom', 'swp-label-studio'); ?>">
-                <i class="fa-solid fa-arrow-down me-2"></i><?php _e('Bottom', 'swp-label-studio'); ?>
-            </button>
-        </div>
-    </div>
-</div>
+                <div class="mt-4">
+                    <span class="prop-label"><?php _e('Quick align', 'swp-label-studio'); ?></span>
+                    
+                    <!-- Horizontal Alignment -->
+                    <div class="mb-2">
+                        <small class="text-muted d-block mb-1"><?php _e('Horizontal', 'swp-label-studio'); ?></small>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('left')" title="<?php esc_attr_e('Align Left', 'swp-label-studio'); ?>">
+                                <i class="fa-solid fa-align-left me-2"></i><?php _e('Left', 'swp-label-studio'); ?>
+                            </button>
+                            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('center')" title="<?php esc_attr_e('Align Center', 'swp-label-studio'); ?>">
+                                <i class="fa-solid fa-align-center me-2"></i><?php _e('Center', 'swp-label-studio'); ?>
+                            </button>
+                            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('right')" title="<?php esc_attr_e('Align Right', 'swp-label-studio'); ?>">
+                                <i class="fa-solid fa-align-right me-2"></i><?php _e('Right', 'swp-label-studio'); ?>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Vertical Alignment -->
+                    <div>
+                        <small class="text-muted d-block mb-1"><?php _e('Vertical', 'swp-label-studio'); ?></small>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('top')" title="<?php esc_attr_e('Align Top', 'swp-label-studio'); ?>">
+                                <i class="fa-solid fa-arrow-up me-2"></i><?php _e('Top', 'swp-label-studio'); ?>
+                            </button>
+                            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('middle')" title="<?php esc_attr_e('Align Middle', 'swp-label-studio'); ?>">
+                                <i class="fa-solid fa-grip-lines me-2"></i><?php _e('Middle', 'swp-label-studio'); ?>
+                            </button>
+                            <button class="btn btn-light border rounded-pill fw-bold" onclick="alignActive('bottom')" title="<?php esc_attr_e('Align Bottom', 'swp-label-studio'); ?>">
+                                <i class="fa-solid fa-arrow-down me-2"></i><?php _e('Bottom', 'swp-label-studio'); ?>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="mt-4">
                     <span class="prop-label"><?php _e('Background', 'swp-label-studio'); ?></span>
@@ -176,35 +176,35 @@ if (!defined('ABSPATH')) {
 
         <!-- CENTER STAGE: CANVAS -->
         <div class="center-stage">
-<div class="action-bar">
-  <div class="action-left">
-    <button class="icon-btn" data-action="undo" title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
-    <button class="icon-btn" data-action="redo" title="Redo (Ctrl+Shift+Z)"><i class="fa-solid fa-rotate-right"></i></button>
-    <div class="vr-separator"></div>
-    <button class="icon-btn" data-action="copyObj" title="Copy (Ctrl+C)"><i class="fa-regular fa-copy"></i></button>
-    <button class="icon-btn" data-action="pasteObj" title="Paste (Ctrl+V)"><i class="fa-regular fa-clipboard"></i></button>
-    <button class="icon-btn danger" data-action="deleteObj" title="Delete (Del)"><i class="fa-solid fa-trash"></i></button>
-    <div class="vr-separator"></div>
-    <button class="icon-btn" id="gridBtn" data-action="toggleGrid" title="Toggle grid (Ctrl+G)"><i class="fa-solid fa-border-all"></i></button>
-    <button class="icon-btn" id="snapBtn" data-action="toggleSnap" title="Snap on/off"><i class="fa-solid fa-magnet"></i></button>
-    <button class="icon-btn" id="guidesBtn" data-action="toggleGuides" title="Center guides"><i class="fa-solid fa-crosshairs"></i></button>
-    <div class="vr-separator"></div>
-    <button class="icon-btn" id="safeBtn" data-action="toggleSafe" title="Safe area overlay"><i class="fa-solid fa-shield-halved"></i></button>
-    <button class="icon-btn" id="bleedBtn" data-action="toggleBleed" title="Bleed overlay"><i class="fa-solid fa-scissors"></i></button>
-    <div class="vr-separator"></div>
-    <button class="icon-btn" data-action="centerActive" title="Center selected"><i class="fa-solid fa-bullseye"></i></button>
-    <button class="icon-btn" data-action="fitToStage" title="Fit to screen"><i class="fa-solid fa-expand"></i></button>
-    <button class="icon-btn" data-action="resetCanvas" title="Reset canvas"><i class="fa-solid fa-eraser"></i></button>
-  </div>
-  <div class="action-right">
-    <button class="btn btn-light border rounded-pill fw-bold px-3" data-action="quickAddBrandBlock">
-      <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Brand Block
-    </button>
-    <button class="btn btn-primary rounded-pill fw-bold px-3" data-action="openExport">
-      <i class="fa-solid fa-arrow-up-right-from-square me-2"></i> Export
-    </button>
-  </div>
-</div>
+            <div class="action-bar">
+                <div class="action-left">
+                    <button class="icon-btn" data-action="undo" title="Undo (Ctrl+Z)"><i class="fa-solid fa-rotate-left"></i></button>
+                    <button class="icon-btn" data-action="redo" title="Redo (Ctrl+Shift+Z)"><i class="fa-solid fa-rotate-right"></i></button>
+                    <div class="vr-separator"></div>
+                    <button class="icon-btn" data-action="copyObj" title="Copy (Ctrl+C)"><i class="fa-regular fa-copy"></i></button>
+                    <button class="icon-btn" data-action="pasteObj" title="Paste (Ctrl+V)"><i class="fa-regular fa-clipboard"></i></button>
+                    <button class="icon-btn danger" data-action="deleteObj" title="Delete (Del)"><i class="fa-solid fa-trash"></i></button>
+                    <div class="vr-separator"></div>
+                    <button class="icon-btn" id="gridBtn" data-action="toggleGrid" title="Toggle grid (Ctrl+G)"><i class="fa-solid fa-border-all"></i></button>
+                    <button class="icon-btn" id="snapBtn" data-action="toggleSnap" title="Snap on/off"><i class="fa-solid fa-magnet"></i></button>
+                    <button class="icon-btn" id="guidesBtn" data-action="toggleGuides" title="Center guides"><i class="fa-solid fa-crosshairs"></i></button>
+                    <div class="vr-separator"></div>
+                    <button class="icon-btn" id="safeBtn" data-action="toggleSafe" title="Safe area overlay"><i class="fa-solid fa-shield-halved"></i></button>
+                    <button class="icon-btn" id="bleedBtn" data-action="toggleBleed" title="Bleed overlay"><i class="fa-solid fa-scissors"></i></button>
+                    <div class="vr-separator"></div>
+                    <button class="icon-btn" data-action="centerActive" title="Center selected"><i class="fa-solid fa-bullseye"></i></button>
+                    <button class="icon-btn" data-action="fitToStage" title="Fit to screen"><i class="fa-solid fa-expand"></i></button>
+                    <button class="icon-btn" data-action="resetCanvas" title="Reset canvas"><i class="fa-solid fa-eraser"></i></button>
+                </div>
+                <div class="action-right">
+                    <button class="btn btn-light border rounded-pill fw-bold px-3" data-action="quickAddBrandBlock">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Brand Block
+                    </button>
+                    <button class="btn btn-primary rounded-pill fw-bold px-3" data-action="openExport">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-2"></i> Export
+                    </button>
+                </div>
+            </div>
 
             <div class="canvas-area">
                 <div class="canvas-wrapper" id="canvasWrapper">
@@ -298,54 +298,135 @@ if (!defined('ABSPATH')) {
                     </div>
                 </div>
 
+            <?php
+// Ensure WooCommerce session
+if ( ! WC()->session ) {
+    WC()->initialize_session();
+}
+
+// Get product from session
+$product_id = WC()->session->get('swp_ls_product_id');
+$product    = $product_id ? wc_get_product($product_id) : null;
+?>
+
 <div class="price-box mt-auto">
-    <div class="d-flex justify-content-between mb-3">
-        <strong><?php _e('Total', 'swp-label-studio'); ?></strong>
-        <strong class="text-primary" id="totalPrice">
-            <?php 
-            // Get product ID from session instead of URL
-            if (!WC()->session) {
-                WC()->initialize_session();
-            }
-            $product_id = WC()->session->get('swp_ls_product_id');
-            
-            if ($product_id) {
-                $product = wc_get_product($product_id);
-                if ($product) {
-                    echo wc_price($product->get_price());
-                } else {
-                    echo wc_price(0);
-                }
-            } else {
-                echo wc_price(0);
-            }
-            ?>
-        </strong>
-    </div>
-    
-    <?php if ($product_id): ?>
-        <button id="swp-ls-add-to-cart" class="btn btn-success w-100 btn-lg fw-bold mb-2">
-            <i class="fa-solid fa-cart-plus me-2"></i>
-            <?php _e('Add to Cart', 'swp-label-studio'); ?>
-        </button>
-    <?php else: ?>
-        <div class="alert alert-warning mb-2">
-            <small>
-                <i class="fa-solid fa-exclamation-triangle me-1"></i>
-                <?php _e('Please launch designer from a product page', 'swp-label-studio'); ?>
-            </small>
+
+<?php if ( $product && $product->get_id() ): ?>
+
+    <?php
+    $is_variable  = $product->is_type('variable');
+    $variations   = $is_variable ? $product->get_available_variations() : [];
+    $has_variants = ( $is_variable && ! empty($variations) );
+    ?>
+
+    <!-- VARIANT SELECTOR (ENHANCED DESIGN) -->
+    <div class="mb-3">
+        <label class="form-label fw-bold d-flex align-items-center gap-2">
+            <i class="fa-solid fa-layer-group text-primary"></i>
+            <?php _e('Variant', 'swp-label-studio'); ?>
+        </label>
+
+        <div class="variant-selector-wrapper">
+            <select
+                id="swp-ls-variation"
+                class="form-select variant-select"
+                <?php echo ! $has_variants ? 'disabled' : ''; ?>
+            >
+                <?php if ( $has_variants ): ?>
+                    <option value="">
+                        <?php _e('Select variant', 'swp-label-studio'); ?>
+                    </option>
+
+                    <?php foreach ( $variations as $variation ): ?>
+                        <option
+                            value="<?php echo esc_attr($variation['variation_id']); ?>"
+                            data-price="<?php echo esc_attr($variation['display_price']); ?>"
+                        >
+                            <?php
+                            $variation_name = [];
+                            foreach ( $variation['attributes'] as $attr_value ) {
+                                $variation_name[] = $attr_value;
+                            }
+                            echo esc_html( implode(' / ', $variation_name) );
+                            ?>
+                        </option>
+                    <?php endforeach; ?>
+
+                <?php else: ?>
+                    <option value="">
+                        <?php _e('No variants available', 'swp-label-studio'); ?>
+                    </option>
+                <?php endif; ?>
+            </select>
+            <i class="fa-solid fa-chevron-down variant-icon"></i>
         </div>
-    <?php endif; ?>
-    
+    </div>
+
+    <!-- QUANTITY (ENHANCED WITH +/- BUTTONS) -->
+    <div class="mb-3">
+        <label class="form-label fw-bold d-flex align-items-center gap-2">
+            <i class="fa-solid fa-hashtag text-primary"></i>
+            <?php _e('Quantity', 'swp-label-studio'); ?>
+        </label>
+        
+        <div class="quantity-selector">
+            <button type="button" class="qty-btn qty-minus" id="qtyMinus">
+                <i class="fa-solid fa-minus"></i>
+            </button>
+            <input
+                type="number"
+                id="swp-ls-qty"
+                class="qty-input"
+                min="1"
+                value="1"
+                readonly
+            >
+            <button type="button" class="qty-btn qty-plus" id="qtyPlus">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- TOTAL PRICE -->
+    <div class="price-summary">
+        <div class="price-label">
+            <i class="fa-solid fa-calculator me-1"></i>
+            <?php _e('Total', 'swp-label-studio'); ?>
+        </div>
+        <div class="price-amount" id="totalPrice" 
+             data-base-price="<?php echo esc_attr($product->get_price()); ?>"
+             data-currency-symbol="<?php echo esc_attr(get_woocommerce_currency_symbol()); ?>">
+            <?php echo wc_price($product->get_price()); ?>
+        </div>
+    </div>
+
+    <!-- ADD TO CART -->
+    <button
+        id="swp-ls-add-to-cart"
+        class="btn btn-primary w-100 btn-lg fw-bold mb-2 add-to-cart-btn"
+        data-product-id="<?php echo esc_attr($product->get_id()); ?>"
+    >
+        <i class="fa-solid fa-cart-plus me-2"></i>
+        <?php _e('Add to Cart', 'swp-label-studio'); ?>
+    </button>
+
+<?php else: ?>
+
+    <div class="alert alert-warning mb-2">
+        <small>
+            <i class="fa-solid fa-exclamation-triangle me-1"></i>
+            <?php _e('Please launch designer from a product page', 'swp-label-studio'); ?>
+        </small>
+    </div>
+
+<?php endif; ?>
+
+    <!-- EXPORT BUTTON -->
     <button class="btn btn-outline-secondary w-100" onclick="openExport()">
         <i class="fa-solid fa-download me-2"></i>
         <?php _e('Export Design', 'swp-label-studio'); ?>
     </button>
-</div>
-            </div>
-        </div>
-    </div>
-</div>
 
+</div>
 <!-- MODALS -->
 <?php include 'modals.php'; ?>
