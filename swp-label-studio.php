@@ -249,9 +249,15 @@ add_filter('wp_check_filetype_and_ext', 'swp_ls_fix_svg_mime_type', 10, 4);
  */
 function swp_ls_svg_media_preview()
 {
+	$screen = get_current_screen();
+	if (!$screen || $screen->id !== 'upload') {
+		return;
+	}
+
 	echo '<style>
-        img[src$=".svg"] {
-            width: 100%;
+        .wp-list-table img[src$=".svg"],
+        .attachment img[src$=".svg"] {
+            width: 80px;
             height: auto;
         }
     </style>';
