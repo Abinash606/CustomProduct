@@ -7,9 +7,8 @@ class SWP_Label_Studio_WC
 {
 	public function __construct()
 	{
-		// Hide default Add to Cart button and add custom Launch Designer button
-		add_action('woocommerce_single_product_summary', array($this, 'remove_add_to_cart_button'), 1);
-		add_action('woocommerce_single_product_summary', array($this, 'render_launch_designer_button'), 30);
+		// Conditionally remove Add to Cart and add Launch Designer button
+		add_action('woocommerce_single_product_summary', array($this, 'conditional_button_display'), 1);
 
 		// Enqueue button styles
 		add_action('wp_enqueue_scripts', array($this, 'enqueue_button_styles'));
@@ -33,11 +32,27 @@ class SWP_Label_Studio_WC
 	}
 
 	/**
-	 * Remove default Add to Cart button
+	 * Conditionally display buttons based on toggle state
 	 */
-	public function remove_add_to_cart_button()
+	public function conditional_button_display()
 	{
-		remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30);
+		global $product;
+
+		if (!$product || !$product->get_id()) {
+			return;
+		}
+
+		$product_id = $product->get_id();
+		$design_label_enabled = get_post_meta($product_id, '_swp_design_label_enabled', true);
+
+		if ($design_label_enabled === 'yes') {
+			// Toggle is ON - Remove default Add to Cart and show Design Label button
+			remove_action('woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30);
+			add_action('woocommerce_single_product_summary', array($this, 'render_launch_designer_button'), 30);
+		} else {
+			// Toggle is OFF - Show default Add to Cart button (do nothing, let WooCommerce handle it)
+			// No need to add any action, WooCommerce will display the default button
+		}
 	}
 
 	/**
@@ -73,6 +88,7 @@ class SWP_Label_Studio_WC
 					letter-spacing: 1px;
 					position: relative;
 					overflow: hidden;
+					text-decoration: none;
 				}
 				
 				.swp-launch-designer:before {

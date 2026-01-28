@@ -1,0 +1,171 @@
+/* ==========================================================================
+   Label Studio - Admin Products Toggle Styles
+   ========================================================================== */
+
+/* Column styling - Make it wider and prevent vertical text */
+.column-swp_design_label {
+    width: 100px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Force horizontal text in header */
+th.column-swp_design_label {
+    writing-mode: horizontal-tb !important;
+    white-space: nowrap !important;
+}
+
+/* Toggle wrapper - centered */
+.swp-toggle-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide default checkbox completely */
+.swp-design-label-toggle {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+    left: -9999px !important;
+}
+
+/* Toggle switch label (the actual visible switch) */
+.swp-toggle-label {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    background: #dcdcde;
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin: 0;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Circle knob - make it more visible */
+.swp-toggle-label::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ON state - WordPress blue */
+.swp-design-label-toggle:checked + .swp-toggle-label {
+    background: #2271b1;
+}
+
+.swp-design-label-toggle:checked + .swp-toggle-label::before {
+    transform: translateX(24px);
+}
+
+/* Hover effect */
+.swp-toggle-label:hover {
+    opacity: 0.85;
+}
+
+/* Focus state for accessibility */
+.swp-design-label-toggle:focus + .swp-toggle-label {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
+
+/* Disabled state */
+.swp-design-label-toggle:disabled + .swp-toggle-label {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f0f0f1;
+}
+
+/* Loading state */
+.swp-toggle-wrapper.loading .swp-toggle-label {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Table cell padding adjustment */
+td.column-swp_design_label {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+/* Animation for smooth transitions */
+@keyframes toggle-slide {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(24px);
+    }
+}
+
+/* Enhanced accessibility */
+.swp-toggle-label:focus-visible {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .swp-toggle-label {
+        border: 2px solid currentColor;
+    }
+    
+    .swp-toggle-label::before {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .swp-toggle-label,
+    .swp-toggle-label::before {
+        transition: none;
+    }
+}
+
+/* Dark mode support (if WordPress admin has dark mode) */
+@media (prefers-color-scheme: dark) {
+    .swp-toggle-label {
+        background: #555;
+    }
+    
+    .swp-design-label-toggle:checked + .swp-toggle-label {
+        background: #0073aa;
+    }
+}
+
+/* Mobile/Touch optimizations */
+@media (max-width: 782px) {
+    .column-swp_design_label {
+        width: 80px !important;
+    }
+    
+    .swp-toggle-label {
+        width: 44px;
+        height: 24px;
+    }
+    
+    .swp-toggle-label::before {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .swp-design-label-toggle:checked + .swp-toggle-label::before {
+        transform: translateX(20px);
+    }
+}

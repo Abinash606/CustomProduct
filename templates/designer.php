@@ -426,7 +426,10 @@ $product    = $product_id ? wc_get_product($product_id) : null;
         <i class="fa-solid fa-download me-2"></i>
         <?php _e('Export Design', 'swp-label-studio'); ?>
     </button>
-
+</div>
+</div>
+</div>
+</div>
 </div>
 <!-- MODALS -->
 <?php include 'modals.php'; ?>
