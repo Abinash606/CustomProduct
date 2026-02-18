@@ -6,24 +6,10 @@ if (!defined('ABSPATH')) {
 <div class="bg-blob"></div>
 
 <div class="app-shell">
+
     <!-- TOP HEADER -->
     <div class="top-header">
         <div class="container-fluid py-2 px-3 d-flex align-items-center justify-content-between gap-3 flex-wrap">
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <div class="brand-pill">
-                    <div class="brand-logo"><i class="fa-solid fa-droplet"></i></div>
-                    <div>
-                        <p class="brand-title"><?php echo esc_html(get_bloginfo('name')); ?></p>
-                        <p class="brand-sub"><?php _e('Label Studio 2026', 'swp-label-studio'); ?></p>
-                    </div>
-                </div>
-                <div class="status-pill" id="saveStatus">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText"><?php _e('Saved', 'swp-label-studio'); ?></span>
-                    <span class="opacity-50">•</span>
-                    <span id="statusTime" class="opacity-75"><?php _e('Just now', 'swp-label-studio'); ?></span>
-                </div>
-            </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
                 <button class="btn btn-light border rounded-pill fw-bold px-3" onclick="showPreview()">
                     <i class="fa-solid fa-eye me-2"></i> <?php _e('Preview', 'swp-label-studio'); ?>
@@ -59,8 +45,10 @@ if (!defined('ABSPATH')) {
             </div>
         </div>
     </div>
+    <!-- /TOP HEADER -->
 
     <div class="designer-layout">
+
         <!-- LEFT PANEL: TOOLBOX -->
         <div class="panel">
             <div class="panel-header">
@@ -68,6 +56,7 @@ if (!defined('ABSPATH')) {
                 <span class="text-muted" style="font-size:0.75rem; font-weight:800;">v2026</span>
             </div>
             <div class="panel-body">
+
                 <span class="prop-label"><?php _e('Start with a template', 'swp-label-studio'); ?></span>
                 <div class="template-scroller">
                     <div class="template-thumb" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);" onclick="loadTemplate('fresh')">
@@ -124,8 +113,6 @@ if (!defined('ABSPATH')) {
 
                 <div class="mt-4">
                     <span class="prop-label"><?php _e('Quick align', 'swp-label-studio'); ?></span>
-                    
-                    <!-- Horizontal Alignment -->
                     <div class="mb-2">
                         <small class="text-muted d-block mb-1"><?php _e('Horizontal', 'swp-label-studio'); ?></small>
                         <div class="d-flex flex-wrap gap-2">
@@ -140,8 +127,6 @@ if (!defined('ABSPATH')) {
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- Vertical Alignment -->
                     <div>
                         <small class="text-muted d-block mb-1"><?php _e('Vertical', 'swp-label-studio'); ?></small>
                         <div class="d-flex flex-wrap gap-2">
@@ -171,8 +156,10 @@ if (!defined('ABSPATH')) {
                 <div class="mt-4 hint-card">
                     <?php _e('Tip: Use', 'swp-label-studio'); ?> <span class="kbd">Ctrl</span> + <span class="kbd">S</span> <?php _e('to save a draft, arrows to nudge.', 'swp-label-studio'); ?>
                 </div>
-            </div>
-        </div>
+
+            </div><!-- /panel-body -->
+        </div><!-- /LEFT PANEL -->
+
 
         <!-- CENTER STAGE: CANVAS -->
         <div class="center-stage">
@@ -227,7 +214,8 @@ if (!defined('ABSPATH')) {
                     <i class="fa-solid fa-magnifying-glass-plus me-2"></i><?php _e('Zoom in', 'swp-label-studio'); ?>
                 </button>
             </div>
-        </div>
+        </div><!-- /CENTER STAGE -->
+
 
         <!-- RIGHT PANEL: EDITOR -->
         <div class="panel">
@@ -238,6 +226,7 @@ if (!defined('ABSPATH')) {
                 </span>
             </div>
             <div class="panel-body">
+
                 <ul class="nav nav-pills mb-3 gap-2" id="editorTabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabProps" type="button" role="tab">
@@ -252,6 +241,7 @@ if (!defined('ABSPATH')) {
                 </ul>
 
                 <div class="tab-content">
+
                     <!-- PROPS TAB -->
                     <div class="tab-pane fade show active" id="tabProps" role="tabpanel">
                         <div id="no-selection" class="hint-card">
@@ -271,7 +261,6 @@ if (!defined('ABSPATH')) {
                                 <span class="prop-label"><?php _e('Fill', 'swp-label-studio'); ?></span>
                                 <input type="color" id="fillColor" class="form-control form-control-color w-100" oninput="updateProp('fill', this.value)">
                             </div>
-
                             <div id="text-props" style="display:none;">
                                 <div class="prop-row">
                                     <span class="prop-label"><?php _e('Font', 'swp-label-studio'); ?></span>
@@ -290,146 +279,129 @@ if (!defined('ABSPATH')) {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div><!-- /tabProps -->
 
                     <!-- LAYERS TAB -->
                     <div class="tab-pane fade" id="tabLayers" role="tabpanel">
                         <div id="layersList"></div>
-                    </div>
-                </div>
+                    </div><!-- /tabLayers -->
 
-            <?php
-// Ensure WooCommerce session
-if ( ! WC()->session ) {
-    WC()->initialize_session();
-}
+                </div><!-- /tab-content -->
 
-// Get product from session
-$product_id = WC()->session->get('swp_ls_product_id');
-$product    = $product_id ? wc_get_product($product_id) : null;
-?>
+                <!-- PRICE BOX & ADD TO CART -->
+                <?php
+                if ( ! WC()->session ) {
+                    WC()->initialize_session();
+                }
+                $product_id = WC()->session->get('swp_ls_product_id');
+                $product    = $product_id ? wc_get_product($product_id) : null;
+                ?>
 
-<div class="price-box mt-auto">
+                <div class="price-box mt-auto">
 
-<?php if ( $product && $product->get_id() ): ?>
+                    <?php if ( $product && $product->get_id() ): ?>
 
-    <?php
-    $is_variable  = $product->is_type('variable');
-    $variations   = $is_variable ? $product->get_available_variations() : [];
-    $has_variants = ( $is_variable && ! empty($variations) );
-    ?>
+                        <?php
+                        $is_variable  = $product->is_type('variable');
+                        $variations   = $is_variable ? $product->get_available_variations() : [];
+                        $has_variants = ( $is_variable && ! empty($variations) );
+                        ?>
 
-    <!-- VARIANT SELECTOR (ENHANCED DESIGN) -->
-    <div class="mb-3">
-        <label class="form-label fw-bold d-flex align-items-center gap-2">
-            <i class="fa-solid fa-layer-group text-primary"></i>
-            <?php _e('Variant', 'swp-label-studio'); ?>
-        </label>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-layer-group text-primary"></i>
+                                <?php _e('Variant', 'swp-label-studio'); ?>
+                            </label>
+                            <div class="variant-selector-wrapper">
+                                <select
+                                    id="swp-ls-variation"
+                                    class="form-select variant-select"
+                                    <?php echo ! $has_variants ? 'disabled' : ''; ?>
+                                >
+                                    <?php if ( $has_variants ): ?>
+                                        <option value=""><?php _e('Select variant', 'swp-label-studio'); ?></option>
+                                        <?php foreach ( $variations as $variation ): ?>
+                                            <option
+                                                value="<?php echo esc_attr($variation['variation_id']); ?>"
+                                                data-price="<?php echo esc_attr($variation['display_price']); ?>"
+                                            >
+                                                <?php
+                                                $variation_name = [];
+                                                foreach ( $variation['attributes'] as $attr_value ) {
+                                                    $variation_name[] = $attr_value;
+                                                }
+                                                echo esc_html( implode(' / ', $variation_name) );
+                                                ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value=""><?php _e('No variants available', 'swp-label-studio'); ?></option>
+                                    <?php endif; ?>
+                                </select>
+                                <i class="fa-solid fa-chevron-down variant-icon"></i>
+                            </div>
+                        </div>
 
-        <div class="variant-selector-wrapper">
-            <select
-                id="swp-ls-variation"
-                class="form-select variant-select"
-                <?php echo ! $has_variants ? 'disabled' : ''; ?>
-            >
-                <?php if ( $has_variants ): ?>
-                    <option value="">
-                        <?php _e('Select variant', 'swp-label-studio'); ?>
-                    </option>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-hashtag text-primary"></i>
+                                <?php _e('Quantity', 'swp-label-studio'); ?>
+                            </label>
+                            <div class="quantity-selector">
+                                <button type="button" class="qty-btn qty-minus" id="qtyMinus">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <input type="number" id="swp-ls-qty" class="qty-input" min="1" value="1" readonly>
+                                <button type="button" class="qty-btn qty-plus" id="qtyPlus">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
 
-                    <?php foreach ( $variations as $variation ): ?>
-                        <option
-                            value="<?php echo esc_attr($variation['variation_id']); ?>"
-                            data-price="<?php echo esc_attr($variation['display_price']); ?>"
+                        <div class="price-summary">
+                            <div class="price-label">
+                                <i class="fa-solid fa-calculator me-1"></i>
+                                <?php _e('Total', 'swp-label-studio'); ?>
+                            </div>
+                            <div class="price-amount" id="totalPrice"
+                                data-base-price="<?php echo esc_attr($product->get_price()); ?>"
+                                data-currency-symbol="<?php echo esc_attr(get_woocommerce_currency_symbol()); ?>">
+                                <?php echo wc_price($product->get_price()); ?>
+                            </div>
+                        </div>
+
+                        <button
+                            id="swp-ls-add-to-cart"
+                            class="btn btn-primary w-100 btn-lg fw-bold mb-2 add-to-cart-btn"
+                            data-product-id="<?php echo esc_attr($product->get_id()); ?>"
                         >
-                            <?php
-                            $variation_name = [];
-                            foreach ( $variation['attributes'] as $attr_value ) {
-                                $variation_name[] = $attr_value;
-                            }
-                            echo esc_html( implode(' / ', $variation_name) );
-                            ?>
-                        </option>
-                    <?php endforeach; ?>
+                            <i class="fa-solid fa-cart-plus me-2"></i>
+                            <?php _e('Add to Cart', 'swp-label-studio'); ?>
+                        </button>
 
-                <?php else: ?>
-                    <option value="">
-                        <?php _e('No variants available', 'swp-label-studio'); ?>
-                    </option>
-                <?php endif; ?>
-            </select>
-            <i class="fa-solid fa-chevron-down variant-icon"></i>
-        </div>
-    </div>
+                    <?php else: ?>
 
-    <!-- QUANTITY (ENHANCED WITH +/- BUTTONS) -->
-    <div class="mb-3">
-        <label class="form-label fw-bold d-flex align-items-center gap-2">
-            <i class="fa-solid fa-hashtag text-primary"></i>
-            <?php _e('Quantity', 'swp-label-studio'); ?>
-        </label>
-        
-        <div class="quantity-selector">
-            <button type="button" class="qty-btn qty-minus" id="qtyMinus">
-                <i class="fa-solid fa-minus"></i>
-            </button>
-            <input
-                type="number"
-                id="swp-ls-qty"
-                class="qty-input"
-                min="1"
-                value="1"
-                readonly
-            >
-            <button type="button" class="qty-btn qty-plus" id="qtyPlus">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </div>
-    </div>
+                        <div class="alert alert-warning mb-2">
+                            <small>
+                                <i class="fa-solid fa-exclamation-triangle me-1"></i>
+                                <?php _e('Please launch designer from a product page', 'swp-label-studio'); ?>
+                            </small>
+                        </div>
 
-    <!-- TOTAL PRICE -->
-    <div class="price-summary">
-        <div class="price-label">
-            <i class="fa-solid fa-calculator me-1"></i>
-            <?php _e('Total', 'swp-label-studio'); ?>
-        </div>
-        <div class="price-amount" id="totalPrice" 
-             data-base-price="<?php echo esc_attr($product->get_price()); ?>"
-             data-currency-symbol="<?php echo esc_attr(get_woocommerce_currency_symbol()); ?>">
-            <?php echo wc_price($product->get_price()); ?>
-        </div>
-    </div>
+                    <?php endif; ?>
 
-    <!-- ADD TO CART -->
-    <button
-        id="swp-ls-add-to-cart"
-        class="btn btn-primary w-100 btn-lg fw-bold mb-2 add-to-cart-btn"
-        data-product-id="<?php echo esc_attr($product->get_id()); ?>"
-    >
-        <i class="fa-solid fa-cart-plus me-2"></i>
-        <?php _e('Add to Cart', 'swp-label-studio'); ?>
-    </button>
+                    <button class="btn btn-outline-secondary w-100" onclick="openExport()">
+                        <i class="fa-solid fa-download me-2"></i>
+                        <?php _e('Export Design', 'swp-label-studio'); ?>
+                    </button>
 
-<?php else: ?>
+                </div><!-- /price-box -->
 
-    <div class="alert alert-warning mb-2">
-        <small>
-            <i class="fa-solid fa-exclamation-triangle me-1"></i>
-            <?php _e('Please launch designer from a product page', 'swp-label-studio'); ?>
-        </small>
-    </div>
+            </div><!-- /panel-body -->
+        </div><!-- /RIGHT PANEL -->
 
-<?php endif; ?>
+    </div><!-- /designer-layout -->
 
-    <!-- EXPORT BUTTON -->
-    <button class="btn btn-outline-secondary w-100" onclick="openExport()">
-        <i class="fa-solid fa-download me-2"></i>
-        <?php _e('Export Design', 'swp-label-studio'); ?>
-    </button>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- MODALS -->
+</div><!-- /app-shell -->
+
 <?php include 'modals.php'; ?>

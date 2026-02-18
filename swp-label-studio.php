@@ -144,20 +144,21 @@ class SWP_Label_Studio
 	{
 		global $post;
 
-		// Load if shortcode exists
+		// Load if this page contains the SWP shortcode
 		if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'swp_label_studio')) {
 			return true;
 		}
 
-		// Load on product pages
+		// Load on WooCommerce product pages (for the launch-designer button)
 		if (is_product()) {
 			return true;
 		}
 
-		// Load if specific GET params
-		if (isset($_GET['designer']) || isset($_GET['product_id'])) {
-			return true;
-		}
+		// SECURITY FIX: Removed generic ?product_id= check — it caused BOTH plugins
+		// to load on any page with that GET param, creating dual Fabric canvas instances,
+		// double click-handlers on #swp-ls-add-to-cart (→ double alert), and canvas
+		// state corruption (→ background image disappearing).
+		// The ?product_id= param is now only honoured on pages that already have the shortcode.
 
 		return false;
 	}

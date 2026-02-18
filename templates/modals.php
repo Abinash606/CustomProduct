@@ -32,6 +32,15 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
+                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-3">
+                    <div class="text-muted">
+                        <i class="fa-solid fa-hand-pointer me-1"></i>
+                        <?php _e( 'Click any icon to add it to your label.', 'swp-label-studio' ); ?>
+                    </div>
+                    <button class="btn btn-light border rounded-pill fw-bold btn-sm" onclick="addWatermarkStamp()">
+                        <i class="fa-solid fa-stamp me-2"></i><?php _e( 'Add "PURE" Stamp', 'swp-label-studio' ); ?>
+                    </button>
+                </div>
                 <div class="row g-3" id="clipGrid"></div>
             </div>
         </div>
@@ -151,6 +160,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         </div>
     </div>
 </div>
+
 <!-- PREVIEW MODAL -->
 <div class="modal fade" id="previewModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -178,35 +188,29 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
                         <?php _e('Close', 'swp-label-studio'); ?>
                     </button>
-                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="openExport()">
-                        <i class="fa-solid fa-download me-2"></i><?php _e('Export', 'swp-label-studio'); ?>
-                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CLIPART MODAL - Replace in modals.php -->
-<div class="modal fade" id="clipModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="border-radius:18px; overflow:hidden;">
-            <div class="modal-header">
-                <h5 class="modal-title fs-6 fw-bold"><?php _e( 'Clipart Library', 'swp-label-studio' ); ?></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-3">
-                    <div class="text-muted">
-                        <i class="fa-solid fa-hand-pointer me-1"></i>
-                        <?php _e( 'Click any icon to add it to your label.', 'swp-label-studio' ); ?>
-                    </div>
-                    <button class="btn btn-light border rounded-pill fw-bold btn-sm" onclick="addWatermarkStamp()">
-                        <i class="fa-solid fa-stamp me-2"></i><?php _e( 'Add "PURE" Stamp', 'swp-label-studio' ); ?>
-                    </button>
-                </div>
-                <div class="row g-3" id="clipGrid"></div>
-            </div>
-        </div>
-    </div>
-</div>
+<!--
+    MODAL ESCAPE SCRIPT
+    Moves all modals to <body> so they are never trapped inside a
+    CSS stacking context created by filter / backdrop-filter / transform
+    on .swp-ls-container, .bg-blob, .panel, or any other ancestor.
+-->
+<script>
+(function () {
+    function teleportModals() {
+        document.querySelectorAll('.swp-ls-container .modal').forEach(function (modal) {
+            document.body.appendChild(modal);
+        });
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', teleportModals);
+    } else {
+        teleportModals();
+    }
+})();
+</script>

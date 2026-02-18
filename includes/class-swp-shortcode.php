@@ -32,10 +32,6 @@ class SWP_Label_Studio_Shortcode
 			error_log('SWP Label Studio: Set product ID from URL: ' . $product_id);
 		}
 
-		// Debug
-		error_log('SWP Label Studio Shortcode: Product ID: ' . var_export($product_id, true));
-		error_log('SWP Label Studio Shortcode: URL param: ' . var_export($_GET['product_id'] ?? 'none', true));
-		error_log('SWP Label Studio Shortcode: Session value: ' . var_export(WC()->session->get('swp_ls_product_id'), true));
 
 		if (!$product_id) {
 			return '<div class="alert alert-warning">
@@ -62,31 +58,26 @@ class SWP_Label_Studio_Shortcode
 			$has_image = !empty($image_url);
 		}
 
-		// Debug
-		error_log('SWP Label Studio: Rendering designer for product ' . $product_id);
-		error_log('SWP Label Studio: Product name: ' . $product->get_name());
-		error_log('SWP Label Studio: Product price: ' . $product->get_price());
-
 		ob_start();
 ?>
-		<div id="swp-ls-designer-app" class="swp-ls-container" data-product-id="<?php echo esc_attr($product_id); ?>"
-			data-variation-id="0" data-qty="1" data-title="<?php echo esc_attr($product->get_name()); ?>"
-			data-price="<?php echo esc_attr($product->get_price()); ?>" data-image="<?php echo esc_url($image_url); ?>"
-			data-load-product-image="<?php echo $has_image ? 'true' : 'false'; ?>">
-			<?php include SWP_LS_PATH . 'templates/designer.php'; ?>
-		</div>
+<div id="swp-ls-designer-app" class="swp-ls-container" data-product-id="<?php echo esc_attr($product_id); ?>"
+    data-variation-id="0" data-qty="1" data-title="<?php echo esc_attr($product->get_name()); ?>"
+    data-price="<?php echo esc_attr($product->get_price()); ?>" data-image="<?php echo esc_url($image_url); ?>"
+    data-load-product-image="<?php echo $has_image ? 'true' : 'false'; ?>">
+    <?php include SWP_LS_PATH . 'templates/designer.php'; ?>
+</div>
 
-		<script>
-			jQuery(document).ready(function($) {
-				console.log('Designer App Data:', {
-					productId: '<?php echo esc_js($product_id); ?>',
-					title: '<?php echo esc_js($product->get_name()); ?>',
-					price: '<?php echo esc_js($product->get_price()); ?>',
-					image: '<?php echo esc_js($image_url); ?>',
-					hasImage: <?php echo $has_image ? 'true' : 'false'; ?>
-				});
-			});
-		</script>
+<script>
+jQuery(document).ready(function($) {
+    console.log('Designer App Data:', {
+        productId: '<?php echo esc_js($product_id); ?>',
+        title: '<?php echo esc_js($product->get_name()); ?>',
+        price: '<?php echo esc_js($product->get_price()); ?>',
+        image: '<?php echo esc_js($image_url); ?>',
+        hasImage: <?php echo $has_image ? 'true' : 'false'; ?>
+    });
+});
+</script>
 <?php
 		return ob_get_clean();
 	}

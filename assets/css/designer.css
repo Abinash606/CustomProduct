@@ -27,8 +27,8 @@ body.page {
     --text: #0f172a;
     --muted: #64748b;
 
-    --canvas-width: 300px;
-    --canvas-height: 450px;
+    --canvas-width: 420px;
+    --canvas-height: 600px;
 
     --safe-margin: 18px;
         --bleed-margin: 6px;

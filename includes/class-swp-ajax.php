@@ -117,7 +117,10 @@ class SWP_Label_Studio_Ajax
 			}
 		}
 
-		// Validate custom price
+		// Validate custom price — fall back to product base price if JS returned 0
+		if ($custom_price <= 0) {
+			$custom_price = (float) $product->get_price();
+		}
 		if ($custom_price <= 0) {
 			error_log('SWP Label Studio - Invalid price received: ' . $custom_price);
 			wp_send_json_error(__('Invalid price calculated. Please try again.', 'swp-label-studio'));
@@ -141,13 +144,16 @@ class SWP_Label_Studio_Ajax
 		// Save JSON file
 		file_put_contents($base_dir . '/design.json', $design_json);
 
-		// Save PNG file
+		// Save PNG file — validate it is a genuine PNG before writing
 		$png_url = '';
 		if (strpos($design_png, 'data:image/png;base64,') === 0) {
 			$png_data = base64_decode(str_replace('data:image/png;base64,', '', $design_png));
-			if ($png_data) {
+			// SECURITY: Verify the decoded bytes start with the PNG magic header (\x89PNG)
+			if ($png_data && substr($png_data, 0, 4) === "\x89PNG") {
 				file_put_contents($base_dir . '/label.png', $png_data);
 				$png_url = $base_url . '/label.png';
+			} else {
+				error_log('SWP Label Studio: Rejected invalid PNG data for design ' . $design_id);
 			}
 		}
 

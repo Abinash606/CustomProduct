@@ -51,7 +51,6 @@ class SWP_Label_Studio_WC
 			add_action('woocommerce_single_product_summary', array($this, 'render_launch_designer_button'), 30);
 		} else {
 			// Toggle is OFF - Show default Add to Cart button (do nothing, let WooCommerce handle it)
-			// No need to add any action, WooCommerce will display the default button
 		}
 	}
 

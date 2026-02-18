@@ -4,12 +4,18 @@
     // DESIGNER INTERFACE - Only runs when canvas exists
     // ============================================
     $(document).ready(function () {
-        if (!$('#c').length) return;
+        // ── GUARD: Only run when THIS plugin's canvas + app wrapper are present.
+        // Without this check, if both swp-label-studio and sls-designer-studio are
+        // active at the same time, both designer.js files would attach to the same
+        // <canvas id="c"> element, creating two competing Fabric instances — which
+        // is the ROOT CAUSE of the background image disappearing and the double
+        // validation alert on Add to Cart.
+        if (!$('#c').length || !$('#swp-ls-designer-app').length) return;
 
         var canvas = null;
 
-        const CANVAS_W = 300;
-        const CANVAS_H = 450;
+        const CANVAS_W = 420;  // widened from 300 — gives more design room
+        const CANVAS_H = 600;  // widened from 450 — maintains 7:10 label ratio
 
         window.swpLsCanvas = new fabric.Canvas('c', {
             width: CANVAS_W,
@@ -170,13 +176,29 @@
                     top: CANVAS_H / 2,
                     originX: 'center',
                     originY: 'center',
-                    selectable: true
+                    // FIX: make product image non-selectable so it acts as a true
+                    // background — users can still delete it via Layers panel but
+                    // cannot accidentally click-select and drag it off-canvas.
+                    selectable: false,
+                    evented: false,
+                    hoverCursor: 'default'
                 });
                 img.name = 'Product Image';
                 canvas.add(img);
                 canvas.sendToBack(img);
                 canvas.renderAll();
-                saveHistory();
+
+                // FIX: Initialize history INSIDE the async callback so history[0]
+                // captures the canvas state WITH the product image already loaded.
+                // Previously this ran synchronously (before the image arrived),
+                // meaning history[0] was an empty canvas — triggering an undo/redo
+                // would silently wipe the product image.
+                history = [JSON.stringify(canvas.toJSON(['name']))];
+                historyIndex = 0;
+                setDirty(false);
+                updatePropsPanel();
+                renderLayers();
+
             }, {
                 crossOrigin: 'anonymous'
             });
@@ -1198,16 +1220,19 @@
             const loadProductImg = $app.data('load-product-image');
 
             if (loadProductImg === true || loadProductImg === 'true') {
+                // Product image path: loadProductImage() handles history init
+                // INSIDE its async callback so history[0] captures the loaded image.
                 loadProductImage();
             } else {
+                // Template path: synchronous, safe to init history immediately after.
                 loadTemplate('minimal');
+                history = [JSON.stringify(canvas.toJSON(['name']))];
+                historyIndex = 0;
+                setDirty(false);
+                updatePropsPanel();
+                renderLayers();
             }
 
-            history = [JSON.stringify(canvas.toJSON(['name']))];
-            historyIndex = 0;
-            setDirty(false);
-            updatePropsPanel();
-            renderLayers();
             applyZoom();
         }
 
